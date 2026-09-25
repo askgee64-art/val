@@ -1,0 +1,48 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+
+# Environments & Secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.cert
+credentials.json
+service-account*.json
+
+# Databases & Local Storage
+*.db
+*.sqlite
+*.sqlite3
+data/val.db*
+data/test_val.db*
+data_test/
+data/audit/audit.jsonl
+data/sandbox/*
+!data/sandbox/.gitkeep
+data/workspace/*
+!data/workspace/.gitkeep
+
+# Node / Frontend / Vercel
+node_modules/
+.next/
+.vercel/
+dist/
+build/
+*.tsbuildinfo
+
+# OS / Editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*~

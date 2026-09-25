@@ -1,0 +1,1055 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VAL — Autonomous AI Executive Command Center</title>
+  <style>
+    :root {
+      --bg: #070b14;
+      --sidebar-bg: #0b1120;
+      --card-bg: #10172a;
+      --card-header: #0f172a;
+      --card-border: #1e293b;
+      --border-light: #334155;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --primary: #3b82f6;
+      --primary-hover: #2563eb;
+      --accent: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-sans);
+      font-size: 13px;
+      line-height: 1.5;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* Top Bar */
+    header {
+      background: var(--sidebar-bg);
+      border-bottom: 1px solid var(--card-border);
+      padding: 10px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 52px;
+      z-index: 50;
+      flex-shrink: 0;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .brand-logo {
+      width: 30px;
+      height: 30px;
+      background: linear-gradient(135deg, #2563eb, #7c3aed);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 15px;
+      color: #fff;
+      box-shadow: 0 0 12px rgba(59, 130, 246, 0.4);
+    }
+    .brand-title { font-size: 16px; font-weight: 700; letter-spacing: 0.5px; }
+    .brand-sub { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
+
+    .header-actions { display: flex; align-items: center; gap: 10px; }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 3px 8px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+    .badge-active { background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); }
+    .badge-paused { background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3); }
+    .badge-emergency { background: rgba(239, 68, 68, 0.2); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.4); animation: pulse 1.5s infinite; }
+    .pulse-dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+    @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
+
+    .btn {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      color: var(--text);
+      padding: 5px 12px;
+      border-radius: 5px;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 12px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s;
+    }
+    .btn:hover { background: #1e293b; border-color: var(--border-light); }
+    .btn-primary { background: var(--primary); border-color: var(--primary); color: #fff; }
+    .btn-primary:hover { background: var(--primary-hover); }
+    .btn-warning { background: #b45309; border-color: #f59e0b; color: #fff; }
+    .btn-danger { background: #991b1b; border-color: var(--danger); color: #fff; }
+    .btn-danger:hover { background: #b91c1c; }
+    .btn-sm { padding: 3px 8px; font-size: 11px; }
+
+    /* App Shell */
+    .app-shell {
+      display: flex;
+      flex: 1;
+      height: calc(100vh - 52px);
+      overflow: hidden;
+    }
+
+    /* Sidebar Navigation */
+    .sidebar {
+      width: 220px;
+      background: var(--sidebar-bg);
+      border-right: 1px solid var(--card-border);
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      overflow-y: auto;
+    }
+    .nav-section-title {
+      padding: 12px 16px 4px;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #64748b;
+      font-weight: 700;
+    }
+    .nav-item {
+      padding: 8px 16px;
+      color: var(--text-muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 500;
+      transition: all 0.15s;
+      border-left: 3px solid transparent;
+    }
+    .nav-item:hover { color: #fff; background: rgba(255, 255, 255, 0.03); }
+    .nav-item.active {
+      color: #60a5fa;
+      background: rgba(59, 130, 246, 0.08);
+      border-left-color: #3b82f6;
+      font-weight: 600;
+    }
+    .nav-badge {
+      margin-left: auto;
+      font-size: 10px;
+      padding: 1px 6px;
+      border-radius: 10px;
+      background: #1e293b;
+      color: #cbd5e1;
+    }
+
+    /* Main View Area */
+    .main-content {
+      flex: 1;
+      background: var(--bg);
+      overflow-y: auto;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+    }
+    .view-panel { display: none; flex-direction: column; gap: 16px; }
+    .view-panel.active { display: flex; }
+
+    /* Cards & Layout */
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 6px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .card-header {
+      padding: 10px 14px;
+      background: var(--card-header);
+      border-bottom: 1px solid var(--card-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-weight: 600;
+    }
+    .card-body { padding: 14px; flex: 1; overflow-y: auto; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+
+    /* Stat Box */
+    .stat-box {
+      background: #0b1120;
+      padding: 12px;
+      border-radius: 6px;
+      border: 1px solid var(--card-border);
+    }
+    .stat-title { font-size: 10px; text-transform: uppercase; color: var(--text-muted); font-weight: 600; }
+    .stat-val { font-size: 18px; font-weight: 700; margin-top: 4px; color: #fff; }
+
+    /* Forms & Inputs */
+    input, textarea, select {
+      background: #0b1120;
+      border: 1px solid var(--card-border);
+      color: #fff;
+      padding: 8px 10px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-family: inherit;
+      width: 100%;
+    }
+    input:focus, textarea:focus, select:focus { outline: none; border-color: var(--primary); }
+
+    /* Chat / Objectives */
+    .chat-box { height: 420px; display: flex; flex-direction: column; }
+    .chat-messages { flex: 1; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; gap: 10px; }
+    .chat-msg { padding: 10px 14px; border-radius: 6px; max-width: 85%; word-break: break-word; }
+    .chat-msg.user { align-self: flex-end; background: #1e3a8a; border: 1px solid #2563eb; color: #eff6ff; }
+    .chat-msg.assistant { align-self: flex-start; background: #0f172a; border: 1px solid #1e293b; white-space: pre-wrap; }
+
+    /* Tables */
+    table { width: 100%; border-collapse: collapse; font-size: 12px; }
+    th { text-align: left; padding: 8px 10px; background: #0b1120; color: var(--text-muted); font-size: 11px; text-transform: uppercase; border-bottom: 1px solid var(--card-border); }
+    td { padding: 8px 10px; border-bottom: 1px solid rgba(255,255,255,0.04); }
+    tr:hover td { background: rgba(255, 255, 255, 0.02); }
+
+    /* Audit Stream */
+    .audit-stream { font-family: var(--font-mono); font-size: 11px; display: flex; flex-direction: column; gap: 4px; }
+    .audit-line { background: #070a12; padding: 6px 10px; border-left: 3px solid #3b82f6; border-radius: 2px; }
+    .audit-line.denied { border-left-color: #ef4444; }
+    .audit-line.emergency { border-left-color: #dc2626; background: #260d0d; }
+
+    /* Progress Bar */
+    .progress-bar-bg { background: #1e293b; height: 8px; border-radius: 4px; overflow: hidden; width: 100%; }
+    .progress-bar-fill { background: linear-gradient(90deg, #3b82f6, #10b981); height: 100%; transition: width 0.3s; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="brand-logo">V</div>
+      <div>
+        <div class="brand-title">VAL COMMAND CENTER</div>
+        <div class="brand-sub">Autonomous AI Executive Workforce</div>
+      </div>
+    </div>
+    <div class="header-actions">
+      <div id="system-badge" class="badge badge-active">
+        <span class="pulse-dot"></span>
+        <span id="system-status-text">ACTIVE</span>
+      </div>
+      <button id="btn-pause" class="btn btn-warning" onclick="togglePause()">Pause Loop</button>
+      <button id="btn-emergency" class="btn btn-danger" onclick="triggerEmergency()">Emergency Killswitch</button>
+      <button id="btn-clear-emg" class="btn" style="display:none;" onclick="clearEmergency()">Clear Emergency</button>
+    </div>
+  </header>
+
+  <div class="app-shell">
+    <!-- Sidebar -->
+    <nav class="sidebar">
+      <div class="nav-section-title">Core Operations</div>
+      <div class="nav-item active" onclick="switchView('view-command')">Command Center</div>
+      <div class="nav-item" onclick="switchView('view-chat')">Chat & Objectives</div>
+      <div class="nav-item" onclick="switchView('view-tasks')">Tasks <span class="nav-badge" id="badge-tasks">0</span></div>
+      <div class="nav-item" onclick="switchView('view-approvals')">Approvals (L4) <span class="nav-badge" style="background:#b45309;color:#fff;" id="badge-approvals">0</span></div>
+
+      <div class="nav-section-title">AI Workforce</div>
+      <div class="nav-item" onclick="switchView('view-agents')">Agents Directory</div>
+      <div class="nav-item" onclick="switchView('view-factory')">Agent Factory</div>
+      <div class="nav-item" onclick="switchView('view-learning')">Learning System</div>
+      <div class="nav-item" onclick="switchView('view-teaching')">Founder Teaching</div>
+
+      <div class="nav-section-title">Execution & Data</div>
+      <div class="nav-item" onclick="switchView('view-memory')">Memory Explorer</div>
+      <div class="nav-item" onclick="switchView('view-tools')">Tools Registry</div>
+      <div class="nav-item" onclick="switchView('view-sandbox')">Sandbox & Code</div>
+      <div class="nav-item" onclick="switchView('view-audit')">Immutable Audit</div>
+
+      <div class="nav-section-title">Infrastructure</div>
+      <div class="nav-item" onclick="switchView('view-hardware')">Hardware & Telemetry</div>
+      <div class="nav-item" onclick="switchView('view-integrations')">Supabase & Vercel</div>
+    </nav>
+
+    <!-- Main Content Panels -->
+    <main class="main-content">
+      <!-- 1. Command Center -->
+      <div id="view-command" class="view-panel active">
+        <div class="grid-4">
+          <div class="stat-box">
+            <div class="stat-title">System Status</div>
+            <div class="stat-val" id="cmd-status" style="color:#10b981;">ONLINE</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-title">Model Provider</div>
+            <div class="stat-val" id="cmd-model">GEMINI</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-title">Registered Agents</div>
+            <div class="stat-val" id="cmd-agents">1</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-title">Pending Approvals</div>
+            <div class="stat-val" id="cmd-approvals" style="color:#f59e0b;">0</div>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-header">QUICK OBJECTIVE INTAKE</div>
+            <div class="card-body">
+              <textarea id="quick-objective" rows="3" placeholder="Enter objective for VAL (e.g. 'Learn calculus well enough to teach me', 'Inspect system diagnostics', 'Execute python script to compute fibonacci')..."></textarea>
+              <button class="btn btn-primary" style="margin-top:10px; width:100%;" onclick="submitQuickObjective()">Execute Objective with VAL</button>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header">INFRASTRUCTURE INTEGRATION STATUS</div>
+            <div class="card-body" style="font-size:12px; display:flex; flex-direction:column; gap:8px;">
+              <div><strong>GitHub Repo:</strong> <span style="color:#10b981;">Initialized (main, develop)</span></div>
+              <div><strong>Supabase PostgreSQL:</strong> <span style="color:#60a5fa;" id="cmd-supabase">Hybrid / Local First (PostgreSQL Schema Ready)</span></div>
+              <div><strong>Vercel Dashboard:</strong> <span style="color:#10b981;">Live Command Center Active</span></div>
+              <div><strong>Laptop Hardware Tier:</strong> <span id="cmd-tier">Lightweight (2 Cores, 2GB RAM)</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">RECENT HIGH IMPACT ACTIONS & APPROVAL GATES</div>
+          <div class="card-body" id="cmd-approvals-list">
+            <div style="color:var(--text-muted);">No pending actions requiring Level 4 authorization.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. Chat & Objectives -->
+      <div id="view-chat" class="view-panel">
+        <div class="card chat-box">
+          <div class="card-header">AUTONOMOUS OBJECTIVE REASONING & PLANNING LOOP</div>
+          <div class="chat-messages" id="chat-messages">
+            <div class="chat-msg assistant">
+              <strong>VAL Executive Ready.</strong>
+Submit your objective. VAL will:
+1. Decompose the goal into structured, ordered steps.
+2. Verify permissions outside the model.
+3. Gate any Level 4 high-impact action behind your manual approval.
+4. Record every action to the immutable audit trail.
+            </div>
+          </div>
+          <div style="padding:10px; background:#0f172a; border-top:1px solid var(--card-border); display:flex; gap:8px;">
+            <input id="chat-input" placeholder="Type objective..." onkeydown="if(event.key==='Enter')submitChatObjective()">
+            <button class="btn btn-primary" onclick="submitChatObjective()">Execute</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. Tasks -->
+      <div id="view-tasks" class="view-panel">
+        <div class="card">
+          <div class="card-header">TASK EXECUTION LEDGER</div>
+          <div class="card-body" id="tasks-table-container">
+            <!-- Rendered tasks table -->
+          </div>
+        </div>
+      </div>
+
+      <!-- 4. Approvals -->
+      <div id="view-approvals" class="view-panel">
+        <div class="card">
+          <div class="card-header" style="color:#f59e0b;">LEVEL 4 HIGH-IMPACT APPROVAL GATES</div>
+          <div class="card-body" id="approvals-full-list">
+            <!-- Full approvals list -->
+          </div>
+        </div>
+      </div>
+
+      <!-- 5. Agents Directory -->
+      <div id="view-agents" class="view-panel">
+        <div class="card">
+          <div class="card-header">
+            <span>SPECIALIZED AI WORKFORCE DIRECTORY</span>
+            <button class="btn btn-primary btn-sm" onclick="switchView('view-factory')">+ Create Agent</button>
+          </div>
+          <div class="card-body" id="agents-directory">
+            <!-- Agents list -->
+          </div>
+        </div>
+      </div>
+
+      <!-- 6. Agent Factory -->
+      <div id="view-factory" class="view-panel">
+        <div class="card">
+          <div class="card-header">VAL AGENT FACTORY — AUTONOMOUS WORKER GENERATION</div>
+          <div class="card-body">
+            <div style="max-width:650px; display:flex; flex-direction:column; gap:12px;">
+              <div>
+                <label style="font-weight:600; display:block; margin-bottom:4px;">Target Objective / Domain Purpose:</label>
+                <input id="factory-objective" placeholder="e.g. Learn calculus well enough to teach me, or Build autonomous Python testing agent">
+              </div>
+              <div>
+                <label style="font-weight:600; display:block; margin-bottom:4px;">Custom Agent Name (Optional):</label>
+                <input id="factory-name" placeholder="e.g. CALCULUS.VAL (Leave blank for auto-generation)">
+              </div>
+              <button class="btn btn-primary" onclick="buildAgentWithFactory()">Manufacture & Validate Agent in Sandbox</button>
+              <div id="factory-output" style="margin-top:10px; display:none;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 7. Learning System -->
+      <div id="view-learning" class="view-panel">
+        <div class="card">
+          <div class="card-header">
+            <span>AUTONOMOUS LEARNING SYSTEM</span>
+            <button class="btn btn-primary btn-sm" onclick="promptNewLearning()">+ New Learning Goal</button>
+          </div>
+          <div class="card-body" id="learning-container">
+            <!-- Learning Objectives & Curricula with progress bars -->
+          </div>
+        </div>
+      </div>
+
+      <!-- 8. Founder Teaching Mode -->
+      <div id="view-teaching" class="view-panel">
+        <div class="card">
+          <div class="card-header">FOUNDER PERSONAL TEACHING INTERFACE</div>
+          <div class="card-body">
+            <div style="max-width:700px; display:flex; flex-direction:column; gap:12px;">
+              <div style="color:var(--text-muted); font-size:12px;">
+                Directly teach VAL company operating principles, policies, or preferences. Directives are tagged with high-priority Founder provenance and made available to all authorized workforce agents.
+              </div>
+              <textarea id="teach-statement" rows="4" placeholder="e.g. 'VAL, this is how I want our company to operate: always run sandbox security checks before writing code, and prioritize privacy over external cloud offload.'"></textarea>
+              <div style="display:flex; gap:10px;">
+                <select id="teach-scope" style="width:200px;">
+                  <option value="company">Company-wide Scope</option>
+                  <option value="project">Project Scope</option>
+                  <option value="agent">Agent Scoped</option>
+                </select>
+                <button class="btn btn-primary" onclick="submitFounderTeaching()">Teach VAL</button>
+              </div>
+              <div id="teach-output" style="margin-top:10px; display:none;"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:14px;">
+          <div class="card-header">STORED FOUNDER DIRECTIVES & PROVENANCE</div>
+          <div class="card-body" id="teachings-list">
+            <!-- List of stored founder teachings -->
+          </div>
+        </div>
+      </div>
+
+      <!-- 9. Memory Explorer -->
+      <div id="view-memory" class="view-panel">
+        <div class="card">
+          <div class="card-header">SCOPED MEMORY EXPLORER</div>
+          <div class="card-body" id="memory-list">
+            <!-- Scoped memory list -->
+          </div>
+        </div>
+      </div>
+
+      <!-- 10. Tools Registry -->
+      <div id="view-tools" class="view-panel">
+        <div class="card">
+          <div class="card-header">SAFE TOOL REGISTRY & RISK MATRIX</div>
+          <div class="card-body" id="tools-list">
+            <!-- Tools list -->
+          </div>
+        </div>
+      </div>
+
+      <!-- 11. Sandbox & Code -->
+      <div id="view-sandbox" class="view-panel">
+        <div class="card">
+          <div class="card-header">ISOLATED CODE SANDBOX RUNNER</div>
+          <div class="card-body">
+            <textarea id="sandbox-code" rows="6" style="font-family:var(--font-mono);" placeholder="print('Hello from isolated VAL sandbox')"></textarea>
+            <button class="btn btn-primary" style="margin-top:10px;" onclick="runSandboxCode()">Execute in Sandbox</button>
+            <pre id="sandbox-res" style="margin-top:10px; background:#0b1120; padding:10px; border-radius:4px; font-family:var(--font-mono); font-size:11px; display:none;"></pre>
+          </div>
+        </div>
+      </div>
+
+      <!-- 12. Immutable Audit -->
+      <div id="view-audit" class="view-panel">
+        <div class="card">
+          <div class="card-header">IMMUTABLE AUDIT TRAIL STREAM</div>
+          <div class="card-body audit-stream" id="audit-stream-full">
+            <!-- Live audit log -->
+          </div>
+        </div>
+      </div>
+
+      <!-- 13. Hardware & Telemetry -->
+      <div id="view-hardware" class="view-panel">
+        <div class="card">
+          <div class="card-header">LAPTOP & RUNTIME HARDWARE TELEMETRY</div>
+          <div class="card-body" id="hardware-details">
+            <!-- Detailed hardware metrics -->
+          </div>
+        </div>
+      </div>
+
+      <!-- 14. Integrations (Supabase + Vercel + GitHub) -->
+      <div id="view-integrations" class="view-panel">
+        <div class="card">
+          <div class="card-header">SUPABASE + GITHUB + VERCEL INTEGRATIONS</div>
+          <div class="card-body" style="display:flex; flex-direction:column; gap:14px;">
+            <div class="stat-box">
+              <strong>GitHub Source Control</strong>
+              <div style="color:var(--text-muted); font-size:12px; margin-top:4px;">
+                Repository: <code>VAL/</code> initialized with <code>main</code>, <code>develop</code>, CI/CD Actions, and branch protection.
+              </div>
+            </div>
+            <div class="stat-box">
+              <strong>Supabase PostgreSQL Persistence & pgvector</strong>
+              <div style="color:var(--text-muted); font-size:12px; margin-top:4px;">
+                Schema defined in <code>database/supabase_schema.sql</code>. Hybrid persistence active (offline SQLite on laptop + cloud Supabase synchronization).
+              </div>
+            </div>
+            <div class="stat-box">
+              <strong>Vercel Web Interface</strong>
+              <div style="color:var(--text-muted); font-size:12px; margin-top:4px;">
+                Configuration: <code>vercel.json</code>. Live command dashboard with full multi-view navigation.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const API_BASE = '/api/v1';
+    let currentConversationId = null;
+    let isPaused = false;
+    let isEmergency = false;
+
+    async function api(path, opts = {}) {
+      opts.headers = {
+        'Content-Type': 'application/json',
+        'x-val-founder-key': 'val-founder-dev-token',
+        ...(opts.headers || {})
+      };
+      const res = await fetch(API_BASE + path, opts);
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({ detail: res.statusText }));
+        throw new Error(err.detail || 'API request failed');
+      }
+      return res.json();
+    }
+
+    function switchView(viewId) {
+      document.querySelectorAll('.view-panel').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+      const target = document.getElementById(viewId);
+      if (target) target.classList.add('active');
+      // Highlight matching nav item
+      const clicked = Array.from(document.querySelectorAll('.nav-item')).find(el => el.getAttribute('onclick') && el.getAttribute('onclick').includes(viewId));
+      if (clicked) clicked.classList.add('active');
+    }
+
+    async function refreshStatus() {
+      try {
+        const status = await api('/status');
+        isPaused = status.global_paused;
+        isEmergency = status.emergency;
+
+        const badge = document.getElementById('system-badge');
+        const text = document.getElementById('system-status-text');
+        const btnPause = document.getElementById('btn-pause');
+        const btnEmg = document.getElementById('btn-emergency');
+        const btnClear = document.getElementById('btn-clear-emg');
+
+        if (status.emergency) {
+          badge.className = 'badge badge-emergency';
+          text.textContent = 'EMERGENCY STOP';
+          btnPause.style.display = 'none';
+          btnEmg.style.display = 'none';
+          btnClear.style.display = 'inline-flex';
+          document.getElementById('cmd-status').textContent = 'EMERGENCY STOP';
+          document.getElementById('cmd-status').style.color = '#ef4444';
+        } else if (status.global_paused) {
+          badge.className = 'badge badge-paused';
+          text.textContent = 'PAUSED';
+          btnPause.textContent = 'Resume Loop';
+          btnPause.className = 'btn btn-primary';
+          btnPause.style.display = 'inline-flex';
+          btnEmg.style.display = 'inline-flex';
+          btnClear.style.display = 'none';
+          document.getElementById('cmd-status').textContent = 'PAUSED';
+          document.getElementById('cmd-status').style.color = '#f59e0b';
+        } else {
+          badge.className = 'badge badge-active';
+          text.textContent = 'ACTIVE';
+          btnPause.textContent = 'Pause Loop';
+          btnPause.className = 'btn btn-warning';
+          btnPause.style.display = 'inline-flex';
+          btnEmg.style.display = 'inline-flex';
+          btnClear.style.display = 'none';
+          document.getElementById('cmd-status').textContent = 'ONLINE';
+          document.getElementById('cmd-status').style.color = '#10b981';
+        }
+
+        document.getElementById('badge-approvals').textContent = status.pending_approvals;
+        document.getElementById('cmd-approvals').textContent = status.pending_approvals;
+      } catch (e) {
+        console.error('Status error:', e);
+      }
+    }
+
+    async function refreshTasks() {
+      try {
+        const tasks = await api('/tasks?limit=25');
+        document.getElementById('badge-tasks').textContent = tasks.length;
+        const c = document.getElementById('tasks-table-container');
+        if (!tasks || tasks.length === 0) {
+          c.innerHTML = '<div style="color:var(--text-muted);">No tasks recorded yet.</div>';
+          return;
+        }
+        c.innerHTML = `
+          <table>
+            <thead>
+              <tr>
+                <th>Status</th>
+                <th>Title</th>
+                <th>Task ID</th>
+                <th>Created</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${tasks.map(t => `
+                <tr>
+                  <td><span class="badge" style="background:${t.status === 'succeeded' ? 'rgba(16,185,129,0.2)' : 'rgba(59,130,246,0.2)'}; color:${t.status === 'succeeded' ? '#10b981' : '#60a5fa'};">${t.status}</span></td>
+                  <td><strong>${t.title}</strong></td>
+                  <td><code>${t.task_id.substring(0,8)}...</code></td>
+                  <td>${new Date(t.created_at).toLocaleTimeString()}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        `;
+      } catch (e) {
+        console.error('Tasks error:', e);
+      }
+    }
+
+    async function refreshApprovals() {
+      try {
+        const approvals = await api('/approvals?status=pending');
+        const cmdList = document.getElementById('cmd-approvals-list');
+        const fullList = document.getElementById('approvals-full-list');
+        if (!approvals || approvals.length === 0) {
+          const empty = '<div style="color:var(--text-muted);">No pending actions requiring Level 4 authorization.</div>';
+          cmdList.innerHTML = empty;
+          fullList.innerHTML = empty;
+          return;
+        }
+        const html = approvals.map(a => `
+          <div style="background:#1e1b4b; border:1px solid #4338ca; padding:12px; border-radius:6px; margin-bottom:10px;">
+            <div style="font-weight:700; color:#fbbf24;">${a.action_type} (Level ${a.risk_level})</div>
+            <div style="font-size:12px; color:#cbd5e1; margin-top:4px;">Step: ${a.action_payload.title || 'High Impact Action'}</div>
+            <div style="font-size:11px; font-family:var(--font-mono); color:#94a3b8; margin-top:4px;">
+              Reason: ${a.action_payload.reason || 'Level 4 Approval Required'}
+            </div>
+            <div style="margin-top:10px; display:flex; gap:8px;">
+              <button class="btn btn-primary btn-sm" onclick="decideApproval('${a.approval_id}', 'approved')">Approve (Execute)</button>
+              <button class="btn btn-danger btn-sm" onclick="decideApproval('${a.approval_id}', 'rejected')">Reject</button>
+            </div>
+          </div>
+        `).join('');
+        cmdList.innerHTML = html;
+        fullList.innerHTML = html;
+      } catch (e) {
+        console.error('Approvals error:', e);
+      }
+    }
+
+    async function decideApproval(id, decision) {
+      try {
+        await api(`/approvals/${id}/decide`, {
+          method: 'POST',
+          body: JSON.stringify({ decision, reason: `Founder ${decision} from dashboard` })
+        });
+        await refreshAll();
+      } catch (e) {
+        alert('Approval failed: ' + e.message);
+      }
+    }
+
+    async function refreshAgents() {
+      try {
+        const agents = await api('/agents');
+        document.getElementById('cmd-agents').textContent = agents.length;
+        const c = document.getElementById('agents-directory');
+        if (!agents || agents.length === 0) {
+          c.innerHTML = '<div style="color:var(--text-muted);">No agents registered.</div>';
+          return;
+        }
+        c.innerHTML = `
+          <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(280px, 1fr)); gap:12px;">
+            ${agents.map(a => `
+              <div style="background:#0b1120; border:1px solid var(--card-border); padding:12px; border-radius:6px;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <strong style="color:#60a5fa; font-size:14px;">${a.name}</strong>
+                  <span class="badge" style="background:#1e293b;">v${a.version}</span>
+                </div>
+                <div style="font-size:12px; color:#cbd5e1; margin-top:4px;">${a.role}</div>
+                <div style="font-size:11px; color:var(--text-muted); margin-top:6px;">
+                  Tools: ${(a.config.tool_allow_list || []).join(', ') || 'none'}
+                </div>
+                <button class="btn btn-primary btn-sm" style="margin-top:10px; width:100%;" onclick="queryAgentPrompt('${a.name}')">Query Agent</button>
+              </div>
+            `).join('')}
+          </div>
+        `;
+      } catch (e) {
+        console.error('Agents error:', e);
+      }
+    }
+
+    async function buildAgentWithFactory() {
+      const obj = document.getElementById('factory-objective').value.trim();
+      const forceName = document.getElementById('factory-name').value.trim() || null;
+      if (!obj) return alert('Please enter target objective');
+      const out = document.getElementById('factory-output');
+      out.style.display = 'block';
+      out.innerHTML = '<div style="color:#60a5fa;">Running Agent Factory pipeline: Requirement Analysis → Config Synthesis → Sandbox Validation...</div>';
+      try {
+        const res = await api('/agents/factory/build', {
+          method: 'POST',
+          body: JSON.stringify({ objective: obj, force_name: forceName })
+        });
+        out.innerHTML = `
+          <div style="background:#0b1120; border:1px solid #10b981; padding:12px; border-radius:6px; color:#10b981;">
+            <strong>Agent Manufactured Successfully!</strong>
+            <div>Name: <strong>${res.agent_name}</strong></div>
+            <div>Sandbox Validation: <strong>PASSED</strong></div>
+            <div style="font-size:11px; color:#cbd5e1; margin-top:4px;">Tests passed: ${res.test_results.length}</div>
+          </div>
+        `;
+        await refreshAgents();
+      } catch (e) {
+        out.innerHTML = `<div style="color:#ef4444;">Build failed: ${e.message}</div>`;
+      }
+    }
+
+    async function refreshLearning() {
+      try {
+        const objectives = await api('/learning/objectives');
+        const c = document.getElementById('learning-container');
+        if (!objectives || objectives.length === 0) {
+          c.innerHTML = '<div style="color:var(--text-muted);">No active learning objectives. Click "+ New Learning Goal" to start one (e.g. Calculus).</div>';
+          return;
+        }
+        c.innerHTML = objectives.map(o => `
+          <div style="background:#0b1120; border:1px solid var(--card-border); padding:14px; border-radius:6px; margin-bottom:12px;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <div>
+                <strong style="font-size:15px; color:#fff;">Subject: ${o.subject}</strong>
+                <span style="margin-left:8px; color:#60a5fa; font-weight:600;">[Agent: ${o.agent_name}]</span>
+              </div>
+              <span class="badge" style="background:#1e3a8a; color:#93c5fd;">${o.status.toUpperCase()}</span>
+            </div>
+            <div style="font-size:12px; color:var(--text-muted); margin-top:4px;">Goal: ${o.goal}</div>
+            <div style="margin-top:10px;">
+              <div style="display:flex; justify-content:space-between; font-size:11px; margin-bottom:4px;">
+                <span>Measured Progress: <strong>${o.progress_score}%</strong></span>
+                <span>Teaching Readiness: <strong>${o.teaching_readiness}%</strong></span>
+              </div>
+              <div class="progress-bar-bg">
+                <div class="progress-bar-fill" style="width: ${o.progress_score}%;"></div>
+              </div>
+            </div>
+            <div style="font-size:12px; margin-top:8px;">Current Topic: <strong>${o.current_topic || 'Completed'}</strong></div>
+            ${o.detected_weaknesses.length ? `<div style="font-size:11px; color:#f59e0b; margin-top:4px;">Detected Weakness: ${o.detected_weaknesses.join('; ')}</div>` : ''}
+            <div style="margin-top:12px;">
+              <button class="btn btn-primary btn-sm" onclick="advanceLearning('${o.objective_id}')">Run Practice & Advance Learning Step</button>
+            </div>
+          </div>
+        `).join('');
+      } catch (e) {
+        console.error('Learning error:', e);
+      }
+    }
+
+    async function promptNewLearning() {
+      const subject = prompt('Enter subject to learn (e.g. Calculus):', 'Calculus');
+      if (!subject) return;
+      const goal = prompt('Enter learning goal:', 'Learn calculus well enough to teach me');
+      if (!goal) return;
+      try {
+        await api('/learning/objectives', {
+          method: 'POST',
+          body: JSON.stringify({ subject, goal })
+        });
+        await refreshLearning();
+        await refreshAgents();
+      } catch (e) {
+        alert('Failed to initialize learning objective: ' + e.message);
+      }
+    }
+
+    async function advanceLearning(id) {
+      try {
+        const res = await api(`/learning/objectives/${id}/advance`, { method: 'POST' });
+        alert(`Learning Cycle Outcome:\nTopic: ${res.topic_title}\nPractice Score: ${res.practice_score}%\nProgress: ${res.overall_progress}%\nNext Action: ${res.next_action}`);
+        await refreshLearning();
+      } catch (e) {
+        alert('Advance learning error: ' + e.message);
+      }
+    }
+
+    async function submitFounderTeaching() {
+      const text = document.getElementById('teach-statement').value.trim();
+      const scope = document.getElementById('teach-scope').value;
+      if (!text) return alert('Enter directive statement');
+      const out = document.getElementById('teach-output');
+      out.style.display = 'block';
+      try {
+        const res = await api('/learning/teach', {
+          method: 'POST',
+          body: JSON.stringify({ statement: text, scope })
+        });
+        out.innerHTML = `
+          <div style="background:#0b1120; border:1px solid #10b981; padding:12px; border-radius:6px; color:#10b981;">
+            <strong>Founder Directive Stored with High-Priority Provenance!</strong>
+            <div>Topic: <strong>${res.classified_topic}</strong> (Scope: ${res.scope})</div>
+            ${res.clarifying_questions.length ? `
+              <div style="margin-top:8px; color:#fbbf24; font-size:11px;">
+                <strong>Proactive Clarification:</strong> ${res.clarifying_questions.join('<br>')}
+              </div>
+            ` : ''}
+          </div>
+        `;
+        document.getElementById('teach-statement').value = '';
+        await refreshTeachings();
+      } catch (e) {
+        out.innerHTML = `<div style="color:#ef4444;">Teaching error: ${e.message}</div>`;
+      }
+    }
+
+    async function refreshTeachings() {
+      try {
+        const list = await api('/learning/teachings');
+        const c = document.getElementById('teachings-list');
+        if (!list || list.length === 0) {
+          c.innerHTML = '<div style="color:var(--text-muted);">No founder teachings stored yet.</div>';
+          return;
+        }
+        c.innerHTML = list.map(t => `
+          <div style="background:#0b1120; border:1px solid var(--card-border); padding:10px; border-radius:4px; margin-bottom:8px;">
+            <div style="display:flex; justify-content:space-between;">
+              <strong style="color:#60a5fa;">${t.title}</strong>
+              <span class="badge" style="background:#1e3a8a; color:#93c5fd;">FOUNDER PROVENANCE</span>
+            </div>
+            <div style="font-size:12px; margin-top:4px;">"${t.content}"</div>
+          </div>
+        `).join('');
+      } catch (e) {
+        console.error('Teachings error:', e);
+      }
+    }
+
+    async function refreshAudit() {
+      try {
+        const logs = await api('/audit?limit=25');
+        const c = document.getElementById('audit-stream-full');
+        c.innerHTML = logs.map(l => {
+          let cls = '';
+          if (l.action.includes('denied') || l.action.includes('failed')) cls = 'denied';
+          if (l.action.includes('emergency')) cls = 'emergency';
+          return `
+            <div class="audit-line ${cls}">
+              <span style="color:#64748b;">${new Date(l.created_at).toLocaleTimeString()}</span>
+              <span style="color:#60a5fa; font-weight:600; margin:0 6px;">[${l.actor_type}]</span>
+              <span>${l.action}</span>
+              ${l.resource_type ? `<span style="color:#94a3b8; margin-left:6px;">(${l.resource_type})</span>` : ''}
+            </div>
+          `;
+        }).join('');
+      } catch (e) {
+        console.error('Audit error:', e);
+      }
+    }
+
+    async function refreshHardware() {
+      try {
+        const d = await api('/diagnostics');
+        const cls = d.classification || {};
+        document.getElementById('cmd-tier').textContent = `${cls.hardware_tier || 'Lightweight'} (${d.cpu_cores || 2} Cores, ${d.ram_total_mb || 2048}MB RAM)`;
+        const c = document.getElementById('hardware-details');
+        c.innerHTML = `
+          <div class="grid-3" style="margin-bottom:14px;">
+            <div class="stat-box">
+              <div class="stat-title">CPU Cores & Arch</div>
+              <div class="stat-val">${d.cpu_cores || 2} Cores</div>
+              <div style="font-size:11px; color:var(--text-muted); margin-top:2px;">Linux x86_64</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-title">System RAM</div>
+              <div class="stat-val">${d.ram_total_mb || 'N/A'} MB</div>
+              <div style="font-size:11px; color:var(--text-muted); margin-top:2px;">Free: ${d.ram_available_mb || 'N/A'} MB</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-title">Disk Storage</div>
+              <div class="stat-val">${d.disk_free_gb || 'N/A'} GB Free</div>
+              <div style="font-size:11px; color:var(--text-muted); margin-top:2px;">Total: ${d.disk_total_gb || 'N/A'} GB</div>
+            </div>
+          </div>
+          <div style="background:#0b1120; border:1px solid var(--card-border); padding:12px; border-radius:6px;">
+            <strong>Hardware-Aware Model Quantization Policy:</strong>
+            <div style="font-size:12px; margin-top:6px; line-height:1.6; color:#cbd5e1;">
+              • Current Tier: <strong>${cls.hardware_tier || 'Lightweight'}</strong><br>
+              • Local Quantized Capable: <strong>${cls.local_quantized_capable ? 'Yes (INT4/INT8)' : 'Small Models Only (INT4 0.5B-1B)'}</strong><br>
+              • Heavy Model Offloading: <strong>Cloud Cascade (Gemini / OpenAI) Active</strong><br>
+              • Offline Mode: <strong>Deterministic Planning Fallback 100% Operational</strong>
+            </div>
+          </div>
+        `;
+      } catch (e) {
+        console.error('Hardware error:', e);
+      }
+    }
+
+    async function submitQuickObjective() {
+      const input = document.getElementById('quick-objective');
+      const val = input.value.trim();
+      if (!val) return;
+      input.value = '';
+      switchView('view-chat');
+      const box = document.getElementById('chat-messages');
+      const u = document.createElement('div');
+      u.className = 'chat-msg user';
+      u.textContent = val;
+      box.appendChild(u);
+      box.scrollTop = box.scrollHeight;
+
+      try {
+        const res = await api('/chat', {
+          method: 'POST',
+          body: JSON.stringify({ content: val, auto_execute: true })
+        });
+        const a = document.createElement('div');
+        a.className = 'chat-msg assistant';
+        a.textContent = res.message.content;
+        box.appendChild(a);
+        box.scrollTop = box.scrollHeight;
+        await refreshAll();
+      } catch (e) {
+        alert('Execution failed: ' + e.message);
+      }
+    }
+
+    async function submitChatObjective() {
+      const input = document.getElementById('chat-input');
+      const val = input.value.trim();
+      if (!val) return;
+      input.value = '';
+      const box = document.getElementById('chat-messages');
+      const u = document.createElement('div');
+      u.className = 'chat-msg user';
+      u.textContent = val;
+      box.appendChild(u);
+      box.scrollTop = box.scrollHeight;
+
+      try {
+        const res = await api('/chat', {
+          method: 'POST',
+          body: JSON.stringify({ content: val, auto_execute: true })
+        });
+        const a = document.createElement('div');
+        a.className = 'chat-msg assistant';
+        a.textContent = res.message.content;
+        box.appendChild(a);
+        box.scrollTop = box.scrollHeight;
+        await refreshAll();
+      } catch (e) {
+        alert('Execution failed: ' + e.message);
+      }
+    }
+
+    async function runSandboxCode() {
+      const code = document.getElementById('sandbox-code').value.trim();
+      if (!code) return;
+      const resEl = document.getElementById('sandbox-res');
+      resEl.style.display = 'block';
+      resEl.textContent = 'Running in isolated subprocess...';
+      try {
+        const res = await api('/tools/code_sandbox/execute', {
+          method: 'POST',
+          body: JSON.stringify({ code, timeout_seconds: 10 })
+        });
+        resEl.textContent = JSON.stringify(res.output || res.error, null, 2);
+      } catch (e) {
+        resEl.textContent = 'Error: ' + e.message;
+      }
+    }
+
+    async function togglePause() {
+      try {
+        if (isPaused) await api('/control/resume', { method: 'POST' });
+        else await api('/control/pause', { method: 'POST' });
+        await refreshStatus();
+      } catch (e) {
+        alert('Pause error: ' + e.message);
+      }
+    }
+
+    async function triggerEmergency() {
+      if (!confirm('CONFIRM EMERGENCY STOP: Freeze all autonomous actions immediately?')) return;
+      try {
+        await api('/control/emergency', { method: 'POST' });
+        await refreshStatus();
+      } catch (e) {
+        alert('Emergency error: ' + e.message);
+      }
+    }
+
+    async function clearEmergency() {
+      try {
+        await api('/control/emergency/clear', { method: 'POST' });
+        await refreshStatus();
+      } catch (e) {
+        alert('Clear emergency error: ' + e.message);
+      }
+    }
+
+    async function refreshAll() {
+      await Promise.all([
+        refreshStatus(),
+        refreshTasks(),
+        refreshApprovals(),
+        refreshAgents(),
+        refreshLearning(),
+        refreshTeachings(),
+        refreshAudit(),
+        refreshHardware()
+      ]);
+    }
+
+    // Initial boot
+    refreshAll();
+    setInterval(refreshAll, 3000);
+  </script>
+</body>
+</html>

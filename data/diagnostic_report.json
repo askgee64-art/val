@@ -1,0 +1,18 @@
+{
+  "os": "Linux-6.1.158+-x86_64-with-glibc2.41",
+  "python_version": "3.13.14",
+  "cpu_cores": 2,
+  "ram_total_mb": 1984,
+  "ram_available_mb": 1473,
+  "disk_total_gb": 24.08,
+  "disk_free_gb": 19.67,
+  "local_runtimes": {
+    "ollama_available": false,
+    "local_fallback_active": true
+  },
+  "classification": {
+    "hardware_tier": "lightweight",
+    "local_quantized_capable": false,
+    "recommended_mode": "hybrid"
+  }
+}

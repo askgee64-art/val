@@ -1,0 +1,37 @@
+name: VAL Security & Invariant Verification
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  security-audit:
+    name: Secrets & Invariants Scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Check for committed secrets or private keys
+        run: |
+          echo "Scanning for accidental private keys or API tokens..."
+          if grep -rnw . -e "BEGIN RSA PRIVATE KEY" -e "BEGIN OPENSSH PRIVATE KEY" -e "service_role" --exclude-dir=".git" --exclude=".env.example"; then
+            echo "::error::Found potential private key or secret committed in repo!"
+            exit 1
+          fi
+          echo "Secret check passed cleanly."
+
+      - name: Check File Safety Policy Invariant
+        run: |
+          python -c "
+          from pathlib import Path
+          import sys
+          sys.path.insert(0, 'backend')
+          from val.security.file_safety import FileSafetyGuard
+          guard = FileSafetyGuard()
+          decision = guard.check('write', 'backend/val/config.py')
+          assert not decision.allowed, 'Protected file write must be denied!'
+          print('File safety invariant verified.')
+          "
