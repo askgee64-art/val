@@ -327,7 +327,47 @@ class ModelRouter:
                 ]
             )
 
-        # 2. System diagnostics / specs
+        # 2. Learning Objectives & Agent Factory (Prompt Spec §13, §14)
+        elif any(w in lowered for w in ["learn", "teach", "curriculum", "study", "master"]):
+            subject = "Calculus" if "calculus" in lowered else (objective.split()[-1].capitalize() or "Domain")
+            steps.extend(
+                [
+                    {
+                        "step_id": 1,
+                        "title": f"Manufacture specialized agent via Agent Factory",
+                        "description": f"Autonomous synthesis, configuration, and sandbox validation for {subject}.VAL.",
+                        "tool_name": "datetime_now",
+                        "tool_input": {},
+                        "required_permission_level": 2,
+                        "risk_class": "low",
+                        "success_criteria": f"{subject}.VAL configured and validated.",
+                    },
+                    {
+                        "step_id": 2,
+                        "title": f"Synthesize structured curriculum for {subject}",
+                        "description": f"Generate topic milestones, practice drills, and evaluation rubrics.",
+                        "tool_name": "code_sandbox",
+                        "tool_input": {
+                            "code": f"print('Synthesized {subject} curriculum with prerequisites, practice drills, and rubrics.')"
+                        },
+                        "required_permission_level": 2,
+                        "risk_class": "medium",
+                        "success_criteria": "Curriculum generated and persisted.",
+                    },
+                    {
+                        "step_id": 3,
+                        "title": f"Execute baseline research and practice drill",
+                        "description": f"Run initial concept practice and weakness assessment for {subject}.",
+                        "tool_name": "calculator" if "calculus" in lowered or "math" in lowered else "code_sandbox",
+                        "tool_input": {"expression": "2 * 3.14159"} if "calculus" in lowered or "math" in lowered else {"code": "print('Concept mastered')"},
+                        "required_permission_level": 2,
+                        "risk_class": "low",
+                        "success_criteria": "Practice evaluation completed with measured score.",
+                    },
+                ]
+            )
+
+        # 3. System diagnostics / specs
         elif any(w in lowered for w in ["diagnostic", "hardware", "specs", "system info", "status"]):
             steps.append(
                 {

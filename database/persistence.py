@@ -72,6 +72,7 @@ class LocalSQLitePersistence(PersistenceService):
 
     async def save_task(self, session: AsyncSession, task_data: dict[str, Any]) -> str:
         task_id = str(task_data.get("task_id") or uuid4())
+        task_data["task_id"] = task_id
         existing = await session.get(Task, task_id)
         if existing:
             for k, v in task_data.items():
@@ -118,6 +119,7 @@ class LocalSQLitePersistence(PersistenceService):
 
     async def save_agent(self, session: AsyncSession, agent_data: dict[str, Any]) -> str:
         agent_id = str(agent_data.get("agent_id") or uuid4())
+        agent_data["agent_id"] = agent_id
         existing = await session.get(Agent, agent_id)
         if existing:
             for k, v in agent_data.items():
@@ -145,6 +147,7 @@ class LocalSQLitePersistence(PersistenceService):
 
     async def save_approval(self, session: AsyncSession, approval_data: dict[str, Any]) -> str:
         appr_id = str(approval_data.get("approval_id") or uuid4())
+        approval_data["approval_id"] = appr_id
         existing = await session.get(Approval, appr_id)
         if existing:
             for k, v in approval_data.items():
@@ -158,6 +161,7 @@ class LocalSQLitePersistence(PersistenceService):
 
     async def log_audit(self, session: AsyncSession, audit_entry: dict[str, Any]) -> str:
         log_id = str(audit_entry.get("log_id") or uuid4())
+        audit_entry["log_id"] = log_id
         entry = AuditLog(**audit_entry)
         session.add(entry)
         await session.flush()
