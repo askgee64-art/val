@@ -184,7 +184,11 @@ class SystemStatus(BaseModel):
     tools_enabled: int
     pending_approvals: int
     running_tasks: int
-    model_mode: str  # "remote" | "local_fallback"
+    model_mode: str  # "REAL_MODEL" | "DEGRADED_FALLBACK" | "local_fallback"
+    model_status: str = "CONNECTED"  # "CONNECTED" | "UNAVAILABLE"
+    memory_status: str = "CONNECTED"
+    autonomy_status: str = "RUNNING"
+    active_model: str = "gemini-3.5-flash-lite"
     uptime_seconds: float
     founder_authenticated: bool = False
     founder_display_name: str = "Tomiwa"

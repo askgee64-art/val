@@ -44,7 +44,10 @@ async def get_system_status(
     tools_registered = len(tools)
     tools_enabled = len([t for t in tools if t.is_enabled])
 
-    model_mode = "remote" if settings.openai_api_key else "local_fallback"
+    has_real_model = bool(settings.gemini_api_key or settings.openai_api_key)
+    model_status = "CONNECTED" if has_real_model else "UNAVAILABLE"
+    model_mode = "REAL_MODEL" if has_real_model else "DEGRADED_FALLBACK"
+    active_model = settings.gemini_default_model if settings.gemini_api_key else settings.default_model
 
     return SystemStatus(
         app_name=settings.app_name,
@@ -58,6 +61,10 @@ async def get_system_status(
         pending_approvals=pending_approvals,
         running_tasks=running_tasks,
         model_mode=model_mode,
+        model_status=model_status,
+        memory_status="CONNECTED" if db_ok else "DEGRADED",
+        autonomy_status="RUNNING" if not engine.global_paused and not engine.emergency else "PAUSED",
+        active_model=active_model,
         uptime_seconds=round(time.time() - _START_TIME, 1),
         founder_authenticated=user.role == "founder",
         founder_display_name=user.display_name or settings.founder_display_name,

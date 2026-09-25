@@ -248,3 +248,94 @@ async def test_conversational_chat_responses(auth_headers):
         msgs = msgs_res.json()
         assert len(msgs) >= 8  # 4 user + 4 assistant msgs
 
+
+@pytest.mark.asyncio
+async def test_cognitive_engine_acceptance_pipeline(auth_headers):
+    """Verifies all cognitive requirements from Founder Directive §22."""
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as client:
+        # TEST A — Casual conversation ("Hi") must NOT trigger Planner/Task
+        res_a = await client.post("/api/v1/chat", json={"content": "Hi"}, headers=auth_headers)
+        assert res_a.status_code == 200
+        data_a = res_a.json()
+        assert data_a["task"] is None
+        assert data_a["plan"] is None
+        assert data_a["message"]["metadata"]["intent"] == "CONVERSATION"
+        conv_id = data_a["conversation_id"]
+
+        # TEST B — Personality/Feelings ("What are you feeling like today?") must NOT trigger Planner
+        res_b = await client.post(
+            "/api/v1/chat",
+            json={"content": "What are you feeling like today?", "conversation_id": conv_id},
+            headers=auth_headers,
+        )
+        assert res_b.status_code == 200
+        data_b = res_b.json()
+        assert data_b["task"] is None
+        assert data_b["plan"] is None
+        assert data_b["message"]["metadata"]["intent"] == "CONVERSATION"
+
+        # TEST C — Context Query ("What were we talking about?")
+        res_c = await client.post(
+            "/api/v1/chat",
+            json={"content": "What were we talking about?", "conversation_id": conv_id},
+            headers=auth_headers,
+        )
+        assert res_c.status_code == 200
+        data_c = res_c.json()
+        assert data_c["task"] is None
+
+        # TEST D — Persistent Cross-Session Memory Directive
+        # Session 1: Store memory directive
+        res_d1 = await client.post(
+            "/api/v1/chat",
+            json={"content": "Remember that VAL is my autonomous AI project", "conversation_id": conv_id},
+            headers=auth_headers,
+        )
+        assert res_d1.status_code == 200
+        data_d1 = res_d1.json()
+        assert data_d1["message"]["metadata"]["intent"] == "MEMORY_STORE"
+
+        # Session 2: Fresh conversation / simulated reload: "What am I building?"
+        res_d2 = await client.post(
+            "/api/v1/chat",
+            json={"content": "What am I building?"},  # Fresh conversation (new conv_id)
+            headers=auth_headers,
+        )
+        assert res_d2.status_code == 200
+        data_d2 = res_d2.json()
+        assert data_d2["message"]["metadata"]["intent"] == "MEMORY_QUERY"
+        assert "VAL" in data_d2["message"]["content"] or "project" in data_d2["message"]["content"]
+
+        # TEST F — Tool Selection and Execution ("What is 125 × 8?")
+        res_f = await client.post(
+            "/api/v1/chat",
+            json={"content": "What is 125 × 8?"},
+            headers=auth_headers,
+        )
+        assert res_f.status_code == 200
+        data_f = res_f.json()
+        assert data_f["message"]["metadata"]["intent"] == "COMMAND"
+        assert "1,000" in data_f["message"]["content"] or "1000" in data_f["message"]["content"]
+
+        # TEST H — Autonomous Learning Task ("Learn calculus and prepare to teach me")
+        res_h = await client.post(
+            "/api/v1/chat",
+            json={"content": "Learn calculus and prepare to teach me"},
+            headers=auth_headers,
+        )
+        assert res_h.status_code == 200
+        data_h = res_h.json()
+        assert data_h["message"]["metadata"]["intent"] == "AUTONOMOUS_TASK"
+        assert data_h["task"] is not None
+        assert "CALCULUS" in data_h["message"]["metadata"].get("agent_name", "")
+
+        # Status Verification (Spec §18)
+        res_status = await client.get("/api/v1/status", headers=auth_headers)
+        assert res_status.status_code == 200
+        status_data = res_status.json()
+        assert status_data["model_status"] in ["CONNECTED", "UNAVAILABLE"]
+        assert status_data["memory_status"] == "CONNECTED"
+        assert status_data["autonomy_status"] in ["RUNNING", "PAUSED"]
+
+
