@@ -187,3 +187,4 @@ class SystemStatus(BaseModel):
     model_mode: str  # "remote" | "local_fallback"
     uptime_seconds: float
     founder_authenticated: bool = False
+    founder_display_name: str = "Tomiwa"

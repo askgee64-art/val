@@ -148,3 +148,44 @@ async def test_api_emergency_control_plane(auth_headers):
         clear_res = await client.post("/api/v1/control/emergency/clear", headers=auth_headers)
         assert clear_res.status_code == 200
         assert clear_res.json()["emergency"] is False
+
+
+@pytest.mark.asyncio
+async def test_api_founder_status_and_frontend_serving(auth_headers):
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as client:
+        # Check status contains founder display name
+        status_res = await client.get("/api/v1/status", headers=auth_headers)
+        assert status_res.status_code == 200
+        status_data = status_res.json()
+        assert status_data["founder_display_name"] == "Tomiwa"
+
+        # Check frontend index serving
+        index_res = await client.get("/")
+        assert index_res.status_code == 200
+        assert "Autonomous AI Personal Operating System" in index_res.text
+        assert "Tomiwa" in index_res.text
+
+        # Check styles.css
+        css_res = await client.get("/styles.css")
+        assert css_res.status_code == 200
+        assert "--glass-card" in css_res.text
+
+        # Check app.js
+        js_res = await client.get("/app.js")
+        assert js_res.status_code == 200
+        assert "refreshSystemStatus" in js_res.text
+
+
+@pytest.mark.asyncio
+async def test_api_activity_stream(auth_headers):
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as client:
+        res = await client.get("/api/v1/activity?limit=5", headers=auth_headers)
+        assert res.status_code == 200
+        activities = res.json()
+        assert isinstance(activities, list)
+        for act in activities:
+            assert "id" in act
+            assert "title" in act
+            assert "timestamp" in act

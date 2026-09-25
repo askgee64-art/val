@@ -107,17 +107,38 @@
   - `SupabasePersistence`: Cloud connected mode via REST/PostgreSQL.
   - `HybridPersistenceService`: Local-first execution with asynchronous, non-blocking cloud synchronization.
 
-### C. Vercel Web Interface
+### C. Vercel Web Interface & Executive OS Frontend
+- **Design Aesthetic:** Nova Glass luxury obsidian dark theme with liquid frosted glass cards, subtle typography, and progressive disclosure (inspired by modern intelligent OS designs).
+- **Core Panels & Progressive Disclosure:**
+  - **Founder Command Center:** Clean, calm, intelligent hero view with personalized greeting for Tomiwa, conversational command bar, and quick action chips (`+ Learn Calculus`, `+ Create Agent`, `+ Teach VAL Principle`, `+ Verify Hardware`).
+  - **Active Objectives:** High-level progress meters, task milestones, and status tags (`Learning`, `Needs Approval`, `Completed`).
+  - **Workforce Directory:** Live status of specialized intelligences (`VAL` Executive Core, `CALCULUS.VAL`, etc.) with one-click inspection of version, capabilities, and permission tiers.
+  - **Conversational Chat:** Natural, intelligent executive chat syntheses without raw technical debug dumps.
+  - **Autonomous Learning & Curriculum:** Measured domain mastery, practice evaluation drills, weakness detection, and teaching readiness.
+  - **Founder Personal Teaching:** Directive intake with explicit High-Authority Provenance (`source_type: founder_teaching`, `authoritative: True`) and proactive clarifying questions.
+  - **Human-Readable Activity Timeline:** `/api/v1/activity` endpoint transforming complex system events into plain-English activity summaries.
+  - **Level 4 Approval Gates:** Prominent, fail-closed approval banner and dedicated gatekeeper view with one-click Approve/Reject buttons.
+  - **Expandable Advanced Mode:** Progressive disclosure drawer tucking engineering internals away by default (Subprocess Code Sandbox, Safe Tool Registry, Raw Cryptographic Audit Stream, Hardware & Quantization Telemetry).
+  - **Clickable System Health Pill:** `● VAL ONLINE` opens a rich modal inspecting Core, API, Database, Supabase sync, Gemini Router, Safe Tools, and System Uptime.
 - **Configuration (`vercel.json`):** Static deployment configuration with reverse proxy for `/api/v1/`.
-- **Dashboard (`frontend/index.html`):**
-  - High-performance, zero-dependency executive interface.
-  - 14 distinct functional panels:
-    - Command Center & Quick Objective Intake
-    - Autonomous Chat & Plan Execution
-    - Task Execution Ledger
-    - Level 4 High-Impact Approval Gates
-    - Specialized Workforce Directory
-    - VAL Agent Factory
+
+---
+
+## 2. AUTOMATED TEST SUITE EXECUTION
+
+- **Total Test Cases:** **34 / 34 Passed (100%)**
+- **Execution Time:** **~2.9 seconds**
+- **Test Modules:**
+  1. `test_agent_factory.py`: Verified autonomous creation of `CALCULUS.VAL` and `CODE.VAL`, tool allow-list isolation, and sandbox validation tests.
+  2. `test_learning_system.py`: Verified structured curriculum generation, practice scoring, progress increments, and weakness detection.
+  3. `test_founder_teaching.py`: Verified directive classification, high-authority provenance metadata (`source_type: founder_teaching`), and proactive clarifying questions.
+  4. `test_supabase_persistence.py`: Verified local SQLite, Supabase cloud client, and Hybrid persistence abstraction.
+  5. `test_git_ops.py`: Verified Git status, branch creation, commit staging, and commit history inspection.
+  6. `test_permissions.py`: Verified L0–L4 matrix, high-risk escalation, allow-lists, global pause, emergency stop.
+  7. `test_file_safety.py`: Verified directory traversal blocks and protected path mutation denials.
+  8. `test_tools.py`: Verified safe calculator, system info hardware probe, code sandbox timeout, and file read/write.
+  9. `test_orchestrator.py`: Verified full autonomy loop, Level 4 approval gate, and audit log immutability.
+  10. `test_api.py`: Verified FastAPI endpoints across status, chat, tasks, approvals, tools, memory, control, activity timeline, and frontend static asset serving.
     - Autonomous Learning System & Curriculum Progress
     - Founder Personal Teaching Interface & Provenance Viewer
     - Scoped Memory Explorer

@@ -78,6 +78,18 @@ def create_app() -> FastAPI:
             async def serve_index() -> FileResponse:
                 return FileResponse(index_file)
 
+        css_file = frontend_dir / "styles.css"
+        if css_file.exists():
+            @app.get("/styles.css", include_in_schema=False)
+            async def serve_css() -> FileResponse:
+                return FileResponse(css_file, media_type="text/css")
+
+        js_file = frontend_dir / "app.js"
+        if js_file.exists():
+            @app.get("/app.js", include_in_schema=False)
+            async def serve_js() -> FileResponse:
+                return FileResponse(js_file, media_type="application/javascript")
+
         app.mount("/static", StaticFiles(directory=str(frontend_dir)), name="static")
 
     return app

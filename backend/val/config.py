@@ -37,7 +37,7 @@ class Settings(BaseSettings):
         default="00000000-0000-4000-8000-000000000010", alias="VAL_FOUNDER_ORG_ID"
     )
     founder_email: str = Field(default="founder@val.local", alias="VAL_FOUNDER_EMAIL")
-    founder_display_name: str = Field(default="Founder", alias="VAL_FOUNDER_NAME")
+    founder_display_name: str = Field(default="Tomiwa", alias="VAL_FOUNDER_NAME")
 
     # Database
     database_url: str = Field(

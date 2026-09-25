@@ -60,6 +60,7 @@ async def get_system_status(
         model_mode=model_mode,
         uptime_seconds=round(time.time() - _START_TIME, 1),
         founder_authenticated=user.role == "founder",
+        founder_display_name=user.display_name or settings.founder_display_name,
     )
 
 
