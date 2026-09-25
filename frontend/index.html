@@ -8,7 +8,7 @@
 </head>
 <body>
 
-  <!-- Top Glass Header -->
+  <!-- Top Minimalist Header -->
   <header class="top-header">
     <div class="brand-wrapper" onclick="switchView('view-command')">
       <div class="brand-symbol">V</div>
@@ -40,36 +40,60 @@
     <aside class="app-sidebar">
       <div class="sidebar-group">
         <div class="sidebar-title">Personal AI</div>
+        
         <div class="nav-link active" data-view="view-command" onclick="switchView('view-command')">
-          <span class="nav-icon">✧</span>
+          <span class="nav-icon">
+            <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+          </span>
           <span>Command Center</span>
         </div>
+
         <div class="nav-link" data-view="view-chat" onclick="switchView('view-chat')">
-          <span class="nav-icon">💬</span>
+          <span class="nav-icon">
+            <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+          </span>
           <span>Chat with VAL</span>
         </div>
+
         <div class="nav-link" data-view="view-objectives" onclick="switchView('view-objectives')">
-          <span class="nav-icon">🎯</span>
+          <span class="nav-icon">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg>
+          </span>
           <span>Objectives</span>
         </div>
+
         <div class="nav-link" data-view="view-workforce" onclick="switchView('view-workforce')">
-          <span class="nav-icon">👥</span>
+          <span class="nav-icon">
+            <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+          </span>
           <span>Workforce</span>
         </div>
+
         <div class="nav-link" data-view="view-learning" onclick="switchView('view-learning')">
-          <span class="nav-icon">📚</span>
+          <span class="nav-icon">
+            <svg viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
+          </span>
           <span>Learning</span>
         </div>
+
         <div class="nav-link" data-view="view-teaching" onclick="switchView('view-teaching')">
-          <span class="nav-icon">💡</span>
+          <span class="nav-icon">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"></circle><line x1="12" y1="2" x2="12" y2="4"></line><line x1="12" y1="20" x2="12" y2="22"></line><line x1="4.93" y1="4.93" x2="6.34" y2="6.34"></line><line x1="17.66" y1="17.66" x2="19.07" y2="19.07"></line><line x1="2" y1="12" x2="4" y2="12"></line><line x1="20" y1="12" x2="22" y2="12"></line><line x1="4.93" y1="19.07" x2="6.34" y2="17.66"></line><line x1="17.66" y1="6.34" x2="19.07" y2="4.93"></line></svg>
+          </span>
           <span>Teach VAL</span>
         </div>
+
         <div class="nav-link" data-view="view-activity" onclick="switchView('view-activity')">
-          <span class="nav-icon">⚡</span>
+          <span class="nav-icon">
+            <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+          </span>
           <span>Activity</span>
         </div>
+
         <div class="nav-link" data-view="view-approvals" onclick="switchView('view-approvals')">
-          <span class="nav-icon">🛡️</span>
+          <span class="nav-icon">
+            <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+          </span>
           <span>Approvals</span>
           <span class="nav-badge-count alert" id="nav-badge-approvals" style="display:none;">0</span>
         </div>
@@ -77,32 +101,46 @@
 
       <!-- Advanced / Engineering Mode (Collapsible Progressive Disclosure) -->
       <div class="sidebar-group" style="margin-top:auto;">
-        <div class="advanced-toggle" onclick="toggleAdvancedNav()">
-          <span>Advanced Mode</span>
-          <span id="advanced-arrow">▾</span>
+        <div class="advanced-toggle open" id="advanced-toggle-btn" onclick="toggleAdvancedNav()">
+          <span>Advanced</span>
+          <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
         </div>
+        
         <div class="advanced-menu open" id="advanced-menu">
           <div class="nav-link" data-view="view-adv-sandbox" onclick="switchView('view-adv-sandbox')">
-            <span class="nav-icon">🧪</span>
+            <span class="nav-icon">
+              <svg viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+            </span>
             <span>Code Sandbox</span>
           </div>
+
           <div class="nav-link" data-view="view-adv-tools" onclick="switchView('view-adv-tools')">
-            <span class="nav-icon">⚙️</span>
+            <span class="nav-icon">
+              <svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>
+            </span>
             <span>Tool Registry</span>
           </div>
+
           <div class="nav-link" data-view="view-adv-audit" onclick="switchView('view-adv-audit')">
-            <span class="nav-icon">📜</span>
+            <span class="nav-icon">
+              <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+            </span>
             <span>Audit Stream</span>
           </div>
+
           <div class="nav-link" data-view="view-adv-system" onclick="switchView('view-adv-system')">
-            <span class="nav-icon">💻</span>
+            <span class="nav-icon">
+              <svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect><rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect><line x1="6" y1="6" x2="6.01" y2="6"></line><line x1="6" y1="18" x2="6.01" y2="18"></line></svg>
+            </span>
             <span>Hardware & Models</span>
           </div>
         </div>
 
-        <div style="margin-top:14px; border-top:1px solid var(--glass-border); padding-top:10px;">
+        <div style="margin-top:14px; border-top:1px solid var(--border); padding-top:10px;">
           <div class="nav-link" data-view="view-settings" onclick="switchView('view-settings')">
-            <span class="nav-icon">⚙</span>
+            <span class="nav-icon">
+              <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+            </span>
             <span>Settings</span>
           </div>
         </div>
@@ -117,7 +155,7 @@
       <!-- ========================================================================= -->
       <section id="view-command" class="view-section active">
         
-        <!-- Floating Level 4 Approval Banner (Only visible when VAL needs Founder) -->
+        <!-- Floating Level 4 Approval Banner -->
         <div id="approval-banner-container"></div>
 
         <!-- Hero Greeting & Conversational Command Bar -->
@@ -129,9 +167,9 @@
         <!-- Command Input -->
         <div class="command-input-container">
           <div class="command-bar">
-            <textarea id="hero-command-input" rows="1" placeholder="Talk to VAL or give an objective..." onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();handleHeroCommandSubmit();}"></textarea>
-            <button class="command-send-btn" onclick="handleHeroCommandSubmit()" title="Execute with VAL">
-              <span>➔</span>
+            <textarea id="hero-command-input" rows="1" placeholder="Message VAL or define an objective..." onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();handleHeroCommandSubmit();}"></textarea>
+            <button class="command-send-btn" onclick="handleHeroCommandSubmit()" title="Execute">
+              <svg viewBox="0 0 24 24"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
             </button>
           </div>
 
@@ -156,7 +194,7 @@
         <div>
           <div class="section-header">
             <span class="section-label">Active Objectives</span>
-            <span class="section-link" onclick="switchView('view-objectives')">View all →</span>
+            <span class="section-link" onclick="switchView('view-objectives')">View all &rarr;</span>
           </div>
           <div class="cards-grid-3" id="command-objectives-grid" style="margin-top:10px;">
             <!-- Rendered dynamically -->
@@ -167,7 +205,7 @@
         <div>
           <div class="section-header">
             <span class="section-label">Your Workforce</span>
-            <span class="section-link" onclick="switchView('view-workforce')">Manage agents →</span>
+            <span class="section-link" onclick="switchView('view-workforce')">Manage agents &rarr;</span>
           </div>
           <div class="cards-grid-3" id="command-workforce-grid" style="margin-top:10px;">
             <!-- Rendered dynamically -->
@@ -178,7 +216,7 @@
         <div>
           <div class="section-header">
             <span class="section-label">Recent Activity</span>
-            <span class="section-link" onclick="switchView('view-activity')">Full history →</span>
+            <span class="section-link" onclick="switchView('view-activity')">Full history &rarr;</span>
           </div>
           <div class="glass-panel activity-card" id="command-activity-feed" style="margin-top:10px;">
             <!-- Rendered dynamically -->
@@ -213,8 +251,8 @@
       <section id="view-objectives" class="view-section">
         <div class="section-header">
           <div>
-            <h2 style="font-size:20px; font-weight:700; color:#fff;">Autonomous Objectives</h2>
-            <p style="font-size:12.5px; color:var(--text-secondary); margin-top:2px;">Track multi-step plans and agent coordination</p>
+            <h2 style="font-size:20px; font-weight:700; color:var(--text-main);">Autonomous Objectives</h2>
+            <p style="font-size:13px; color:var(--text-secondary); margin-top:2px;">Track multi-step plans and agent coordination</p>
           </div>
         </div>
         <div class="cards-grid-2" id="all-objectives-grid">
@@ -228,8 +266,8 @@
       <section id="view-workforce" class="view-section">
         <div class="section-header">
           <div>
-            <h2 style="font-size:20px; font-weight:700; color:#fff;">Your AI Workforce</h2>
-            <p style="font-size:12.5px; color:var(--text-secondary); margin-top:2px;">Specialized autonomous intelligences working on your behalf</p>
+            <h2 style="font-size:20px; font-weight:700; color:var(--text-main);">Your AI Workforce</h2>
+            <p style="font-size:13px; color:var(--text-secondary); margin-top:2px;">Specialized autonomous intelligences working on your behalf</p>
           </div>
           <button class="btn-ui btn-ui-primary" onclick="switchView('view-factory')">+ Create New Agent</button>
         </div>
@@ -243,20 +281,20 @@
       <!-- ========================================================================= -->
       <section id="view-factory" class="view-section">
         <div class="glass-panel" style="padding:28px; max-width:680px; margin:0 auto; width:100%;">
-          <h2 style="font-size:20px; font-weight:700; color:#fff;">Create a New VAL Agent</h2>
+          <h2 style="font-size:20px; font-weight:700; color:var(--text-main);">Create a New VAL Agent</h2>
           <p style="font-size:13px; color:var(--text-secondary); margin-top:4px;">
-            The Agent Factory will autonomously generate configuration, synthesize safe tool boundaries, and validate competencies inside the sandbox.
+            The Agent Factory autonomously generates configuration, restricts safe tool boundaries, and validates competencies inside the sandbox.
           </p>
 
           <div style="margin-top:24px; display:flex; flex-direction:column; gap:18px;">
             <div>
               <label style="font-size:12px; font-weight:700; text-transform:uppercase; color:var(--text-muted); display:block; margin-bottom:6px;">What should this AI specialize in?</label>
-              <input id="factory-domain-input" placeholder="e.g. Calculus, Python Systems, Aerospace Engineering, Financial Modeling" style="background:rgba(255,255,255,0.03); border:1px solid var(--glass-border); border-radius:var(--radius-sm); padding:10px 14px; color:#fff; font-size:13px; width:100%;">
+              <input id="factory-domain-input" placeholder="e.g. Calculus, Python Systems, Aerospace Engineering, Financial Modeling" style="width:100%;">
             </div>
 
             <div>
               <label style="font-size:12px; font-weight:700; text-transform:uppercase; color:var(--text-muted); display:block; margin-bottom:6px;">What should it do?</label>
-              <textarea id="factory-purpose-input" rows="3" placeholder="e.g. Learn calculus well enough to teach me and provide rigorous step-by-step proofs." style="background:rgba(255,255,255,0.03); border:1px solid var(--glass-border); border-radius:var(--radius-sm); padding:10px 14px; color:#fff; font-size:13px; width:100%; resize:vertical;"></textarea>
+              <textarea id="factory-purpose-input" rows="3" placeholder="e.g. Learn calculus well enough to teach me and provide rigorous step-by-step proofs." style="width:100%; resize:vertical;"></textarea>
             </div>
 
             <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:8px;">
@@ -264,7 +302,7 @@
               <button class="btn-ui btn-ui-primary" onclick="submitAgentFactoryForm()">Manufacture Agent</button>
             </div>
 
-            <div id="factory-build-result" style="display:none; padding:14px; background:rgba(255,255,255,0.02); border-radius:var(--radius-sm); border:1px solid var(--glass-border);"></div>
+            <div id="factory-build-result" style="display:none; padding:14px; background:var(--bg-subtle); border-radius:var(--radius-sm); border:1px solid var(--border);"></div>
           </div>
         </div>
       </section>
@@ -275,8 +313,8 @@
       <section id="view-learning" class="view-section">
         <div class="section-header">
           <div>
-            <h2 style="font-size:20px; font-weight:700; color:#fff;">Autonomous Learning Programs</h2>
-            <p style="font-size:12.5px; color:var(--text-secondary); margin-top:2px;">Measured mastery, weakness detection, and teaching preparation</p>
+            <h2 style="font-size:20px; font-weight:700; color:var(--text-main);">Autonomous Learning Programs</h2>
+            <p style="font-size:13px; color:var(--text-secondary); margin-top:2px;">Measured mastery, weakness detection, and teaching preparation</p>
           </div>
           <button class="btn-ui btn-ui-primary" onclick="initCalculusLearning()">+ Learn Calculus</button>
         </div>
@@ -290,16 +328,16 @@
       <!-- ========================================================================= -->
       <section id="view-teaching" class="view-section">
         <div class="glass-panel" style="padding:28px; max-width:760px; margin:0 auto; width:100%;">
-          <h2 style="font-size:20px; font-weight:700; color:#fff;">Teach VAL Personally</h2>
+          <h2 style="font-size:20px; font-weight:700; color:var(--text-main);">Teach VAL Personally</h2>
           <p style="font-size:13px; color:var(--text-secondary); margin-top:4px;">
             Teach VAL your operational principles, company vision, and preferences. Directives are tagged with high-authority Founder provenance and shared with authorized workforce agents.
           </p>
 
           <div style="margin-top:20px; display:flex; flex-direction:column; gap:14px;">
-            <textarea id="founder-teach-input" rows="4" placeholder="e.g. 'VAL, this is how I want our company to operate: always run sandbox security checks before writing code, and prioritize data privacy over external cloud offloading.'" style="background:rgba(255,255,255,0.03); border:1px solid var(--glass-border); border-radius:var(--radius-sm); padding:12px 14px; color:#fff; font-size:13.5px; width:100%; line-height:1.5;"></textarea>
+            <textarea id="founder-teach-input" rows="4" placeholder="e.g. 'VAL, this is how I want our company to operate: always run sandbox security checks before writing code, and prioritize data privacy over external cloud offloading.'" style="width:100%; line-height:1.5;"></textarea>
 
             <div style="display:flex; justify-content:space-between; align-items:center;">
-              <select id="founder-teach-scope" style="background:rgba(255,255,255,0.04); border:1px solid var(--glass-border); color:#fff; padding:8px 12px; border-radius:var(--radius-sm); font-size:12.5px; width:220px;">
+              <select id="founder-teach-scope" style="padding:8px 12px; border-radius:var(--radius-sm); font-size:13px; width:220px;">
                 <option value="company">Company-wide Scope</option>
                 <option value="project">Project Scope</option>
                 <option value="agent">Specialized Agent Scope</option>
@@ -307,12 +345,12 @@
               <button class="btn-ui btn-ui-primary" onclick="submitFounderTeachingForm()">Store Directive</button>
             </div>
 
-            <div id="founder-teach-response" style="display:none; padding:12px; background:rgba(255,255,255,0.02); border-radius:var(--radius-sm); border:1px solid var(--glass-border);"></div>
+            <div id="founder-teach-response" style="display:none; padding:12px; background:var(--bg-subtle); border-radius:var(--radius-sm); border:1px solid var(--border);"></div>
           </div>
         </div>
 
         <div style="margin-top:24px;">
-          <h3 style="font-size:15px; font-weight:700; color:#fff; margin-bottom:12px;">Active Founder Directives</h3>
+          <h3 style="font-size:15px; font-weight:700; color:var(--text-main); margin-bottom:12px;">Active Founder Directives</h3>
           <div id="stored-teachings-container">
             <!-- Rendered dynamically -->
           </div>
@@ -325,8 +363,8 @@
       <section id="view-activity" class="view-section">
         <div class="section-header">
           <div>
-            <h2 style="font-size:20px; font-weight:700; color:#fff;">System Activity</h2>
-            <p style="font-size:12.5px; color:var(--text-secondary); margin-top:2px;">Human-readable log of decisions, tests, and task completions</p>
+            <h2 style="font-size:20px; font-weight:700; color:var(--text-main);">System Activity</h2>
+            <p style="font-size:13px; color:var(--text-secondary); margin-top:2px;">Human-readable record of decisions, evaluations, and task completions</p>
           </div>
         </div>
         <div class="glass-panel activity-card" id="all-activity-feed">
@@ -340,8 +378,8 @@
       <section id="view-approvals" class="view-section">
         <div class="section-header">
           <div>
-            <h2 style="font-size:20px; font-weight:700; color:#fff;">Level 4 Approval Gates</h2>
-            <p style="font-size:12.5px; color:var(--text-secondary); margin-top:2px;">Actions affecting external services, production, or high-impact state require your sign-off.</p>
+            <h2 style="font-size:20px; font-weight:700; color:var(--text-main);">Level 4 Approval Gates</h2>
+            <p style="font-size:13px; color:var(--text-secondary); margin-top:2px;">Actions affecting external services, production, or high-impact state require your sign-off.</p>
           </div>
         </div>
         <div id="approvals-view-container">
@@ -354,12 +392,12 @@
       <!-- ========================================================================= -->
       <section id="view-adv-sandbox" class="view-section">
         <div class="glass-panel" style="padding:24px;">
-          <h3 style="font-size:16px; font-weight:700; color:#fff;">Isolated Code Sandbox</h3>
-          <p style="font-size:12.5px; color:var(--text-secondary); margin-top:2px;">Execute Python scripts in an isolated subprocess under resource bounds and timeouts.</p>
+          <h3 style="font-size:16px; font-weight:700; color:var(--text-main);">Isolated Code Sandbox</h3>
+          <p style="font-size:13px; color:var(--text-secondary); margin-top:2px;">Execute Python scripts in an isolated subprocess under resource bounds and timeouts.</p>
           <div style="margin-top:16px;">
-            <textarea id="adv-sandbox-code" rows="6" style="font-family:var(--font-mono); font-size:12px; background:#070a12; border:1px solid var(--glass-border); padding:12px; border-radius:var(--radius-sm); color:#38bdf8; width:100%;" placeholder="# Run safe Python code in sandbox&#10;import math&#10;print('Euler identity test:', math.e**(math.pi * 1j))"></textarea>
+            <textarea id="adv-sandbox-code" rows="6" style="font-family:var(--font-mono); font-size:12.5px; background:var(--bg-subtle); border:1px solid var(--border); padding:12px; border-radius:var(--radius-sm); color:var(--text-main); width:100%;" placeholder="# Run safe Python code in sandbox&#10;import math&#10;print('Euler identity test:', math.e**(math.pi * 1j))"></textarea>
             <button class="btn-ui btn-ui-primary" style="margin-top:10px;" onclick="runAdvancedSandbox()">Run in Sandbox</button>
-            <pre id="adv-sandbox-out" style="display:none; margin-top:12px; background:#070a12; padding:12px; border-radius:var(--radius-sm); border:1px solid var(--glass-border); font-family:var(--font-mono); font-size:11.5px; color:#e2e8f0;"></pre>
+            <pre id="adv-sandbox-out" style="display:none; margin-top:12px; background:var(--bg-subtle); padding:12px; border-radius:var(--radius-sm); border:1px solid var(--border); font-family:var(--font-mono); font-size:12px; color:var(--text-main);"></pre>
           </div>
         </div>
       </section>
@@ -370,8 +408,8 @@
       <section id="view-adv-tools" class="view-section">
         <div class="section-header">
           <div>
-            <h2 style="font-size:20px; font-weight:700; color:#fff;">Registered Safe Tools</h2>
-            <p style="font-size:12.5px; color:var(--text-secondary); margin-top:2px;">Enforced at execution boundaries outside LLM context</p>
+            <h2 style="font-size:20px; font-weight:700; color:var(--text-main);">Registered Safe Tools</h2>
+            <p style="font-size:13px; color:var(--text-secondary); margin-top:2px;">Enforced at execution boundaries outside LLM context</p>
           </div>
         </div>
         <div id="adv-tools-list">
@@ -385,8 +423,8 @@
       <section id="view-adv-audit" class="view-section">
         <div class="section-header">
           <div>
-            <h2 style="font-size:20px; font-weight:700; color:#fff;">Immutable Audit Stream</h2>
-            <p style="font-size:12.5px; color:var(--text-secondary); margin-top:2px;">Cryptographically immutable append-only event stream (Table 11 / Doc 21)</p>
+            <h2 style="font-size:20px; font-weight:700; color:var(--text-main);">Immutable Audit Stream</h2>
+            <p style="font-size:13px; color:var(--text-secondary); margin-top:2px;">Cryptographically immutable append-only event stream</p>
           </div>
         </div>
         <div class="glass-panel activity-card" id="adv-audit-stream">
@@ -399,24 +437,24 @@
       <!-- ========================================================================= -->
       <section id="view-adv-system" class="view-section">
         <div class="glass-panel" style="padding:24px;">
-          <h3 style="font-size:16px; font-weight:700; color:#fff;">Hardware Profile & Quantization Capacity</h3>
-          <p style="font-size:12.5px; color:var(--text-secondary); margin-top:2px;">Measured local laptop compute vs. cloud cascade strategy</p>
+          <h3 style="font-size:16px; font-weight:700; color:var(--text-main);">Hardware Profile & Quantization Capacity</h3>
+          <p style="font-size:13px; color:var(--text-secondary); margin-top:2px;">Measured local laptop compute vs. cloud cascade strategy</p>
 
           <div style="margin-top:18px; display:grid; grid-template-columns:repeat(3, 1fr); gap:12px;">
-            <div style="background:rgba(255,255,255,0.02); padding:14px; border-radius:var(--radius-sm); border:1px solid var(--glass-border);">
-              <div style="font-size:10.5px; text-transform:uppercase; color:var(--text-muted); font-weight:700;">CPU Architecture</div>
-              <div style="font-size:16px; font-weight:700; color:#fff; margin-top:4px;">Linux x86_64</div>
-              <div style="font-size:11px; color:var(--text-secondary); margin-top:2px;">2 Cores Active</div>
+            <div style="background:var(--bg-subtle); padding:14px; border-radius:var(--radius-sm); border:1px solid var(--border);">
+              <div style="font-size:11px; text-transform:uppercase; color:var(--text-muted); font-weight:700;">CPU Architecture</div>
+              <div style="font-size:16px; font-weight:700; color:var(--text-main); margin-top:4px;">Linux x86_64</div>
+              <div style="font-size:12px; color:var(--text-secondary); margin-top:2px;">2 Cores Active</div>
             </div>
-            <div style="background:rgba(255,255,255,0.02); padding:14px; border-radius:var(--radius-sm); border:1px solid var(--glass-border);">
-              <div style="font-size:10.5px; text-transform:uppercase; color:var(--text-muted); font-weight:700;">System Memory</div>
-              <div style="font-size:16px; font-weight:700; color:#fff; margin-top:4px;">~2,048 MB RAM</div>
-              <div style="font-size:11px; color:var(--text-secondary); margin-top:2px;">Tier: Lightweight</div>
+            <div style="background:var(--bg-subtle); padding:14px; border-radius:var(--radius-sm); border:1px solid var(--border);">
+              <div style="font-size:11px; text-transform:uppercase; color:var(--text-muted); font-weight:700;">System Memory</div>
+              <div style="font-size:16px; font-weight:700; color:var(--text-main); margin-top:4px;">~2,048 MB RAM</div>
+              <div style="font-size:12px; color:var(--text-secondary); margin-top:2px;">Tier: Lightweight</div>
             </div>
-            <div style="background:rgba(255,255,255,0.02); padding:14px; border-radius:var(--radius-sm); border:1px solid var(--glass-border);">
-              <div style="font-size:10.5px; text-transform:uppercase; color:var(--text-muted); font-weight:700;">Local Model Capable</div>
-              <div style="font-size:16px; font-weight:700; color:#38bdf8; margin-top:4px;">INT4 Fallback</div>
-              <div style="font-size:11px; color:var(--text-secondary); margin-top:2px;">Heavy models offloaded to Gemini</div>
+            <div style="background:var(--bg-subtle); padding:14px; border-radius:var(--radius-sm); border:1px solid var(--border);">
+              <div style="font-size:11px; text-transform:uppercase; color:var(--text-muted); font-weight:700;">Local Model Capable</div>
+              <div style="font-size:16px; font-weight:700; color:var(--accent-blue); margin-top:4px;">INT4 Fallback</div>
+              <div style="font-size:12px; color:var(--text-secondary); margin-top:2px;">Heavy models routed to Gemini</div>
             </div>
           </div>
         </div>
@@ -427,19 +465,19 @@
       <!-- ========================================================================= -->
       <section id="view-settings" class="view-section">
         <div class="glass-panel" style="padding:24px; max-width:700px; margin:0 auto; width:100%;">
-          <h2 style="font-size:20px; font-weight:700; color:#fff;">System & Integration Settings</h2>
-          <div style="margin-top:20px; display:flex; flex-direction:column; gap:14px; font-size:13px;">
-            <div style="display:flex; justify-content:space-between; align-items:center; padding-bottom:12px; border-bottom:1px solid var(--glass-border);">
+          <h2 style="font-size:20px; font-weight:700; color:var(--text-main);">System & Integration Settings</h2>
+          <div style="margin-top:20px; display:flex; flex-direction:column; gap:14px; font-size:13.5px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; padding-bottom:12px; border-bottom:1px solid var(--border);">
               <div>
                 <strong>Founder Profile</strong>
-                <div style="color:var(--text-secondary); font-size:11.5px;">Tomiwa (Full administrative & emergency authority)</div>
+                <div style="color:var(--text-secondary); font-size:12px;">Tomiwa (Full administrative & emergency authority)</div>
               </div>
               <span class="pill-tag succeeded">Verified</span>
             </div>
-            <div style="display:flex; justify-content:space-between; align-items:center; padding-bottom:12px; border-bottom:1px solid var(--glass-border);">
+            <div style="display:flex; justify-content:space-between; align-items:center; padding-bottom:12px; border-bottom:1px solid var(--border);">
               <div>
                 <strong>Emergency Control Plane</strong>
-                <div style="color:var(--text-secondary); font-size:11.5px;">Global freeze or autonomy pause independently of reasoning loop</div>
+                <div style="color:var(--text-secondary); font-size:12px;">Global freeze or autonomy pause independently of reasoning loop</div>
               </div>
               <div style="display:flex; gap:8px;">
                 <button class="btn-ui btn-ui-secondary" onclick="togglePause()">Pause / Resume</button>
@@ -449,7 +487,7 @@
             <div style="display:flex; justify-content:space-between; align-items:center;">
               <div>
                 <strong>Ecosystem Integrations</strong>
-                <div style="color:var(--text-secondary); font-size:11.5px;">GitHub (main/develop) • Supabase (Hybrid PostgreSQL) • Vercel Web</div>
+                <div style="color:var(--text-secondary); font-size:12px;">GitHub (main/develop) • Supabase (Hybrid PostgreSQL) • Vercel Web</div>
               </div>
               <span class="pill-tag succeeded">Connected</span>
             </div>
@@ -461,7 +499,7 @@
   </div>
 
   <!-- ========================================================================= -->
-  <!-- MODAL 1: SYSTEM STATUS (Triggered by ● VAL ONLINE in header) -->
+  <!-- MODAL 1: SYSTEM STATUS -->
   <!-- ========================================================================= -->
   <div class="modal-overlay" id="status-modal" onclick="if(event.target===this)closeSystemStatusModal()">
     <div class="modal-card">
@@ -470,30 +508,30 @@
         <button class="modal-close" onclick="closeSystemStatusModal()">&times;</button>
       </div>
       <div class="modal-body">
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; font-size:12.5px;">
-          <div style="padding:10px; background:rgba(255,255,255,0.02); border-radius:var(--radius-sm); border:1px solid var(--glass-border);">
-            <div style="color:var(--text-muted); font-size:10px; text-transform:uppercase;">VAL Core</div>
-            <div style="font-weight:700; color:#34d399; margin-top:2px;" id="sm-core">Online</div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; font-size:13px;">
+          <div style="padding:12px; background:var(--bg-subtle); border-radius:var(--radius-sm); border:1px solid var(--border);">
+            <div style="color:var(--text-muted); font-size:10.5px; text-transform:uppercase; font-weight:700;">VAL Core</div>
+            <div style="font-weight:700; color:var(--status-green-text); margin-top:2px;" id="sm-core">Online</div>
           </div>
-          <div style="padding:10px; background:rgba(255,255,255,0.02); border-radius:var(--radius-sm); border:1px solid var(--glass-border);">
-            <div style="color:var(--text-muted); font-size:10px; text-transform:uppercase;">API Gateway</div>
-            <div style="font-weight:700; color:#34d399; margin-top:2px;" id="sm-api">Online</div>
+          <div style="padding:12px; background:var(--bg-subtle); border-radius:var(--radius-sm); border:1px solid var(--border);">
+            <div style="color:var(--text-muted); font-size:10.5px; text-transform:uppercase; font-weight:700;">API Gateway</div>
+            <div style="font-weight:700; color:var(--status-green-text); margin-top:2px;" id="sm-api">Online</div>
           </div>
-          <div style="padding:10px; background:rgba(255,255,255,0.02); border-radius:var(--radius-sm); border:1px solid var(--glass-border);">
-            <div style="color:var(--text-muted); font-size:10px; text-transform:uppercase;">Database</div>
-            <div style="font-weight:700; color:#38bdf8; margin-top:2px;" id="sm-db">Connected</div>
+          <div style="padding:12px; background:var(--bg-subtle); border-radius:var(--radius-sm); border:1px solid var(--border);">
+            <div style="color:var(--text-muted); font-size:10.5px; text-transform:uppercase; font-weight:700;">Database</div>
+            <div style="font-weight:700; color:var(--accent-blue); margin-top:2px;" id="sm-db">Connected</div>
           </div>
-          <div style="padding:10px; background:rgba(255,255,255,0.02); border-radius:var(--radius-sm); border:1px solid var(--glass-border);">
-            <div style="color:var(--text-muted); font-size:10px; text-transform:uppercase;">Model Provider</div>
-            <div style="font-weight:700; color:#fff; margin-top:2px;" id="sm-model">Gemini</div>
+          <div style="padding:12px; background:var(--bg-subtle); border-radius:var(--radius-sm); border:1px solid var(--border);">
+            <div style="color:var(--text-muted); font-size:10.5px; text-transform:uppercase; font-weight:700;">Model Provider</div>
+            <div style="font-weight:700; color:var(--text-main); margin-top:2px;" id="sm-model">Gemini</div>
           </div>
-          <div style="padding:10px; background:rgba(255,255,255,0.02); border-radius:var(--radius-sm); border:1px solid var(--glass-border);">
-            <div style="color:var(--text-muted); font-size:10px; text-transform:uppercase;">Safe Tools</div>
-            <div style="font-weight:700; color:#fff; margin-top:2px;" id="sm-tools">10 Enabled</div>
+          <div style="padding:12px; background:var(--bg-subtle); border-radius:var(--radius-sm); border:1px solid var(--border);">
+            <div style="color:var(--text-muted); font-size:10.5px; text-transform:uppercase; font-weight:700;">Safe Tools</div>
+            <div style="font-weight:700; color:var(--text-main); margin-top:2px;" id="sm-tools">10 Enabled</div>
           </div>
-          <div style="padding:10px; background:rgba(255,255,255,0.02); border-radius:var(--radius-sm); border:1px solid var(--glass-border);">
-            <div style="color:var(--text-muted); font-size:10px; text-transform:uppercase;">Uptime</div>
-            <div style="font-weight:700; color:#fff; margin-top:2px;" id="sm-uptime">Active</div>
+          <div style="padding:12px; background:var(--bg-subtle); border-radius:var(--radius-sm); border:1px solid var(--border);">
+            <div style="color:var(--text-muted); font-size:10.5px; text-transform:uppercase; font-weight:700;">Uptime</div>
+            <div style="font-weight:700; color:var(--text-main); margin-top:2px;" id="sm-uptime">Active</div>
           </div>
         </div>
 
@@ -515,23 +553,23 @@
       </div>
       <div class="modal-body">
         <div style="margin-bottom:14px;">
-          <div style="font-size:14px; font-weight:700; color:#fff;" id="modal-agent-role">Role</div>
-          <div style="font-size:12px; color:var(--text-secondary); margin-top:4px;" id="modal-agent-prompt">Prompt</div>
+          <div style="font-size:15px; font-weight:700; color:var(--text-main);" id="modal-agent-role">Role</div>
+          <div style="font-size:13px; color:var(--text-secondary); margin-top:4px;" id="modal-agent-prompt">Prompt</div>
         </div>
 
-        <div style="background:rgba(255,255,255,0.02); padding:12px; border-radius:var(--radius-sm); border:1px solid var(--glass-border); margin-bottom:14px; font-size:12px;">
-          <div>Status: <strong id="modal-agent-status" style="color:#34d399;">ACTIVE</strong></div>
-          <div style="margin-top:4px;">Allowed Tools: <strong id="modal-agent-tools" style="color:#38bdf8;"></strong></div>
+        <div style="background:var(--bg-subtle); padding:12px 14px; border-radius:var(--radius-sm); border:1px solid var(--border); margin-bottom:14px; font-size:12.5px;">
+          <div>Status: <strong id="modal-agent-status" style="color:var(--status-green-text);">ACTIVE</strong></div>
+          <div style="margin-top:4px;">Allowed Tools: <strong id="modal-agent-tools" style="color:var(--accent-blue);"></strong></div>
         </div>
 
         <!-- Progressive Disclosure: Technical Info -->
-        <details style="margin-top:14px; font-size:12px; color:var(--text-secondary);">
-          <summary style="cursor:pointer; color:var(--accent-cyan); font-weight:600; margin-bottom:8px;">Advanced Technical Specs</summary>
-          <div style="background:#070a12; padding:12px; border-radius:var(--radius-sm); border:1px solid var(--glass-border); display:flex; flex-direction:column; gap:4px; font-family:var(--font-mono); font-size:11px;">
-            <div>MODEL: <span id="modal-tech-model" style="color:#fff;"></span></div>
-            <div>PERMISSION LEVEL: <span id="modal-tech-perm" style="color:#fff;"></span></div>
-            <div>MEMORY SCOPE: <span id="modal-tech-memory" style="color:#fff;"></span></div>
-            <div>RUNTIME: <span style="color:#fff;">Isolated Local Sandbox</span></div>
+        <details style="margin-top:14px; font-size:12.5px; color:var(--text-secondary);">
+          <summary style="cursor:pointer; color:var(--accent-blue); font-weight:600; margin-bottom:8px;">Advanced Technical Specs</summary>
+          <div style="background:var(--bg-subtle); padding:12px; border-radius:var(--radius-sm); border:1px solid var(--border); display:flex; flex-direction:column; gap:6px; font-family:var(--font-mono); font-size:12px;">
+            <div>MODEL: <span id="modal-tech-model" style="color:var(--text-main);"></span></div>
+            <div>PERMISSION LEVEL: <span id="modal-tech-perm" style="color:var(--text-main);"></span></div>
+            <div>MEMORY SCOPE: <span id="modal-tech-memory" style="color:var(--text-main);"></span></div>
+            <div>RUNTIME: <span style="color:var(--text-main);">Isolated Local Sandbox</span></div>
           </div>
         </details>
 
