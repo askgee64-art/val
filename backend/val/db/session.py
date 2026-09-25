@@ -81,6 +81,9 @@ async def _seed(session: AsyncSession) -> None:
             last_login_at=utcnow(),
         )
         session.add(user)
+    elif user.display_name != settings.founder_display_name:
+        user.display_name = settings.founder_display_name
+        session.add(user)
 
     # Core VAL agent (the executive agent itself)
     result = await session.execute(

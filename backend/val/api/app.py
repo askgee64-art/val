@@ -74,19 +74,19 @@ def create_app() -> FastAPI:
     if frontend_dir.exists():
         index_file = frontend_dir / "index.html"
         if index_file.exists():
-            @app.get("/", response_class=HTMLResponse, include_in_schema=False)
+            @app.api_route("/", methods=["GET", "HEAD"], response_class=HTMLResponse, include_in_schema=False)
             async def serve_index() -> FileResponse:
                 return FileResponse(index_file)
 
         css_file = frontend_dir / "styles.css"
         if css_file.exists():
-            @app.get("/styles.css", include_in_schema=False)
+            @app.api_route("/styles.css", methods=["GET", "HEAD"], include_in_schema=False)
             async def serve_css() -> FileResponse:
                 return FileResponse(css_file, media_type="text/css")
 
         js_file = frontend_dir / "app.js"
         if js_file.exists():
-            @app.get("/app.js", include_in_schema=False)
+            @app.api_route("/app.js", methods=["GET", "HEAD"], include_in_schema=False)
             async def serve_js() -> FileResponse:
                 return FileResponse(js_file, media_type="application/javascript")
 
