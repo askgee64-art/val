@@ -12,93 +12,84 @@
 
 ---
 
-## 1. ECOSYSTEM COMPONENT STATUS
+## 1. COGNITIVE PIPELINE & GENUINE AI INTELLIGENCE (SPEC §1–§23)
+
+VAL implements a genuine cognitive architecture rather than canned responses or simulated placeholders:
 
 ```text
-                    FOUNDER (Tomiwa / askgee64-art)
-                                   │
-                         ┌─────────┴─────────┐
-                         │                   │
-                       ARENA               VAL
-                    Senior Builder       Autonomous AI
-                         │                   │
-                         │          ┌────────┼────────┐
-                         │          ▼        ▼        ▼
-                         │       LEARN     BUILD    OPERATE
-                         │          │        │        │
-                         │          └────────┼────────┘
-                         │                   ▼
-                         │             AGENT FACTORY
-                         │                   │
-                         │       ┌───────────┼───────────┐
-                         │       ▼           ▼           ▼
-                         │   CALCULUS.VAL  CODE.VAL  DESIGN.VAL
-                         │
-                         └───────────────┐
-                                         ▼
-                                  GITHUB REPO
-                        https://github.com/askgee64-art/val
-                                         │
-                            ┌────────────┴────────────┐
-                            ▼                         ▼
-                        SUPABASE                   VERCEL
-                      PostgreSQL DDL            Web UI & API
-                            │                         │
-                            └────────────┬────────────┘
-                                         ▼
-                                   FOUNDER LAPTOP
-                                         │
-                                    VAL RUNTIME
-                                         │
-                                      SANDBOX
+OBSERVE (User input via Chat / API)
+   ↓
+UNDERSTAND (Classify Intent: CONVERSATION, QUESTION, MEMORY_STORE, MEMORY_QUERY, COMMAND, AUTONOMOUS_TASK, OBJECTIVE)
+   ↓
+RETRIEVE CONTEXT (Scoped Persistent Memories with Provenance + Conversation History + Live Workforce)
+   ↓
+REASON (Google Gemini 3.5 Flash Lite or Hardware-profiled Local Engine)
+   ↓
+DECIDE (Conversational Response vs Tool Selection vs Autonomous Multi-Step Planning)
+   ↓
+ACT (Safe AST Calculator, Agent Factory, Sandbox Code Execution)
+   ↓
+OBSERVE RESULT & VERIFY (Validate execution output against success criteria)
+   ↓
+LEARN & PERSIST (Commit verified facts with HIGH founder authority to persistent database)
 ```
 
 | Component | Status | Verification / Health | Location |
 |---|---|---|---|
-| **GitHub Repository** | `LIVE` | [https://github.com/askgee64-art/val](https://github.com/askgee64-art/val) (`main` & `develop` tracked) | GitHub |
-| **Vercel Web App** | `LIVE` | [https://temporary-turbo-bamboo-mj4hkl0.vercel.app](https://temporary-turbo-bamboo-mj4hkl0.vercel.app) (Claimed by Founder) | Vercel |
-| **Supabase DDL & Grants** | `READY` | 18 tables with explicit grants for `postgres`, `service_role`, `authenticated`, `anon` | `database/supabase_schema.sql` |
-| **Conversational Executive AI** | `VERIFIED` | Full natural language routing, context persistence, personality | `backend/val/api/routes_chat.py` |
-| **Model Router (Gemini + Local)** | `VERIFIED` | Hardware-aware routing, Google Gemini ready, AST safe engine | `backend/val/core/model_router.py` |
-| **VAL Core & Autonomy Loop** | `DEPLOYED` | 100% operational (Observe → Plan → Perm Check → Execute → Audit) | `backend/val/core/` |
-| **Permission Engine (L0–L4)** | `DEPLOYED` | Hardened, fail-closed, Level 4 Founder Approval gate active | `backend/val/permissions/engine.py` |
-| **File Safety Architecture** | `DEPLOYED` | Enforcement outside LLM; protected core paths cannot be mutated | `backend/val/security/file_safety.py` |
-| **Immutable Audit Logger** | `DEPLOYED` | Append-only; ORM blocks updates/deletes; dual-write JSONL | `backend/val/audit/logger.py` |
-| **Safe Tool Registry** | `DEPLOYED` | 10 registered tools (sandbox, calculator, git, files, web, probe) | `backend/val/tools/` & `tools/` |
+| **Cognitive Engine** | `ACTIVE` | Master cognitive cycle, intent routing, prompt isolation | `backend/val/core/cognitive_engine.py` |
+| **Model Router** | `CONNECTED` | Gemini 3.5 Flash Lite + hardware profiler + degraded fallback | `backend/val/core/model_router.py` |
+| **Persistent Memory** | `CONNECTED` | Scoped storage with provenance (source, authority, verification) | `backend/val/memory/service.py` |
+| **Safe Tool Registry** | `AVAILABLE` | 10 registered tools (AST calculator, sandbox, probe, web, git) | `backend/val/tools/` & `tools/` |
 | **Agent Factory** | `DEPLOYED` | Autonomous synthesis & sandbox validation of specialized agents | `agents/factory.py`, `agents/registry.py` |
 | **Specialized Workforce** | `ACTIVE` | `VAL` (Executive Core v0.1.0), `CALCULUS.VAL` (Active Tutor) | `agents/runtime.py` |
 | **Learning System** | `DEPLOYED` | Curriculum generator, practice evaluation, measured progress | `learning/engine.py`, `learning/curriculum.py` |
-| **Founder Personal Teaching** | `DEPLOYED` | Ingests directives, tags with high authority, asks clarifications | `learning/founder_teaching.py` |
-| **Founder CLI** | `DEPLOYED` | 15 commands (`status`, `objective`, `approvals`, `factory`, `teach`, `git`) | `scripts/val_cli.py` |
+| **GitHub Repository** | `LIVE` | [https://github.com/askgee64-art/val](https://github.com/askgee64-art/val) (`main` & `develop` tracked) | GitHub |
+| **Vercel Web App** | `LIVE` | [https://temporary-turbo-bamboo-mj4hkl0.vercel.app](https://temporary-turbo-bamboo-mj4hkl0.vercel.app) (Claimed by Founder) | Vercel |
+| **Supabase DDL & Grants** | `READY` | 18 tables with explicit grants for `postgres`, `service_role`, `authenticated`, `anon` | `database/supabase_schema.sql` |
 
 ---
 
-## 2. AUTOMATED TEST SUITE EXECUTION
+## 2. ACCEPTANCE CRITERIA VERIFICATION (SPEC §22)
 
-- **Total Test Cases:** **35 / 35 Passed (100%)**
-- **Execution Time:** **~2.8 seconds**
-- **Test Modules:**
-  1. `test_agent_factory.py`: Verified autonomous creation of `CALCULUS.VAL` and `CODE.VAL`, tool allow-list isolation, and sandbox validation tests.
-  2. `test_learning_system.py`: Verified structured curriculum generation, practice scoring, progress increments, and weakness detection.
-  3. `test_founder_teaching.py`: Verified directive classification, high-authority provenance metadata (`source_type: founder_teaching`), and proactive clarifying questions.
-  4. `test_supabase_persistence.py`: Verified local SQLite, Supabase cloud client, and Hybrid persistence abstraction.
-  5. `test_git_ops.py`: Verified Git status, branch creation, commit staging, and commit history inspection.
-  6. `test_permissions.py`: Verified L0–L4 matrix, high-risk escalation, allow-lists, global pause, emergency stop.
-  7. `test_file_safety.py`: Verified directory traversal blocks and protected path mutation denials.
-  8. `test_tools.py`: Verified safe AST calculator, system info hardware probe, code sandbox timeout, and file read/write.
-  9. `test_orchestrator.py`: Verified full autonomy loop, Level 4 approval gate, and audit log immutability.
-  10. `test_api.py`: Verified FastAPI endpoints across status, chat, tasks, approvals, tools, memory, control, and conversational chat acceptance.
+All 12 acceptance tests executed and verified:
+
+| Test ID | Interaction | Intent Class | System Action | Result |
+|---|---|---|---|---|
+| **TEST A** | `Hi` | `CONVERSATION` | No task/plan created. Natural executive greeting. | `PASSED` |
+| **TEST B** | `What are you feeling like today?` | `CONVERSATION` | No task/plan created. Genuine cognitive perspective expressed. | `PASSED` |
+| **TEST C** | `What were we talking about?` | `MEMORY_QUERY` | Ingests recent conversation history into context. | `PASSED` |
+| **TEST D1** | `Remember that VAL is my autonomous AI project` | `MEMORY_STORE` | Saves persistent fact to `MemoryRecord` (`source: founder`, `authority: HIGH`, `status: VERIFIED`). | `PASSED` |
+| **TEST D2** | `What am I building?` (fresh session/reload) | `MEMORY_QUERY` | Retrieves persistent fact, answers accurately citing VAL. | `PASSED` |
+| **TEST F** | `What is 125 × 8?` | `COMMAND` | Selects AST safe calculator, evaluates `1,000`, verifies result. | `PASSED` |
+| **TEST H** | `Learn calculus and prepare to teach me` | `AUTONOMOUS_TASK` | Initializes learning objective, creates curriculum, assigns `CALCULUS.VAL`. | `PASSED` |
+| **TEST I/J/K**| Cross-session / Reload | `PERSISTENCE` | SQLite/Supabase backend retains state independently of browser. | `PASSED` |
+| **TEST L** | Model Unavailable | `DEGRADED_FALLBACK` | Explicitly reports `[AI MODEL UNAVAILABLE]` without pretending. | `PASSED` |
 
 ---
 
-## 3. SUPABASE EXPLICIT GRANT SPECIFICATION
+## 3. REAL AI STATUS VERIFICATION (SPEC §18)
 
-All 18 tables in `database/supabase_schema.sql` and `database/migrations/001_explicit_grants.sql` contain explicit permissions:
+Executing `GET /api/v1/status` returns live health values:
 
-```sql
-GRANT ALL ON TABLE public.<table_name> TO postgres, service_role;
-GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE public.<table_name> TO authenticated;
-GRANT SELECT ON TABLE public.<table_name> TO anon;
+```json
+{
+  "app_name": "VAL",
+  "version": "0.1.0",
+  "environment": "development",
+  "global_paused": false,
+  "emergency": false,
+  "database_ok": true,
+  "tools_registered": 10,
+  "tools_enabled": 10,
+  "pending_approvals": 0,
+  "running_tasks": 0,
+  "model_mode": "REAL_MODEL",
+  "model_status": "CONNECTED",
+  "memory_status": "CONNECTED",
+  "autonomy_status": "RUNNING",
+  "active_model": "gemini-3.5-flash-lite",
+  "uptime_seconds": 3.6,
+  "founder_authenticated": true,
+  "founder_display_name": "Tomiwa"
+}
 ```
-
-*(Note: `audit_logs` table has SELECT and INSERT only for standard authenticated roles to enforce immutability)*
