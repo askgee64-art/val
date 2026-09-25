@@ -1,6 +1,7 @@
 /**
  * VAL Personal Autonomous AI Operating System — Frontend Controller
- * Minimalist, Professional, Zero-Distraction Interface (ChatGPT Aesthetic)
+ * Minimalist, Professional, Zero-Distraction Interface
+ * Connected to live backend APIs: Status, Chat, Tasks, Learning, Agents, Factory, Memory, Tools, Audit.
  */
 
 const API_BASE = '/api/v1';
@@ -51,15 +52,23 @@ function switchView(viewId) {
     target.classList.add('active');
   }
   
-  // Highlight active link
   const link = document.querySelector(`.nav-link[data-view="${viewId}"]`);
   if (link) {
     link.classList.add('active');
   }
 
+  // Close mobile sidebar if open
+  const sidebar = document.getElementById('app-sidebar');
+  if (sidebar) sidebar.classList.remove('mobile-open');
+
   // Scroll viewport to top
   const vp = document.querySelector('.app-viewport');
   if (vp) vp.scrollTop = 0;
+}
+
+function toggleMobileSidebar() {
+  const sidebar = document.getElementById('app-sidebar');
+  if (sidebar) sidebar.classList.toggle('mobile-open');
 }
 
 function toggleAdvancedNav() {
@@ -129,6 +138,7 @@ async function refreshSystemStatus() {
   }
 }
 
+// Approvals & Needs Your Attention
 async function refreshApprovals() {
   try {
     const approvals = await api('/approvals?status=pending');
@@ -141,38 +151,34 @@ async function refreshApprovals() {
       return;
     }
 
-    // Render Banner on Command Center
+    // Render prominent but calm "Needs Your Attention" banner on Command Center
     if (container) {
-      container.innerHTML = approvals.map(a => `
+      container.innerHTML = `
         <div class="approval-banner">
           <div class="approval-info">
             <div class="approval-title">
               <span>ACTION REQUIRES YOUR APPROVAL</span>
-              <span class="pill-tag pending">Level ${a.risk_level} Gate</span>
+              <span class="pill-tag pending">${approvals.length} Gate${approvals.length > 1 ? 's' : ''} Pending</span>
             </div>
             <div class="approval-desc" style="margin-top:2px;">
-              <strong>VAL wants to:</strong> ${escapeHtml(a.action_payload.title || a.action_type)}
-            </div>
-            <div style="font-size:12px; color:var(--text-secondary); margin-top:2px;">
-              Reason: ${escapeHtml(a.action_payload.reason || 'This operation carries high operational impact.')}
+              <strong>VAL requested:</strong> ${escapeHtml(approvals[0].action_payload.title || approvals[0].action_type)}
             </div>
           </div>
           <div class="approval-actions">
-            <button class="btn-ui btn-ui-primary" onclick="decideApproval('${a.approval_id}', 'approved')">Approve Action</button>
-            <button class="btn-ui btn-ui-danger" onclick="decideApproval('${a.approval_id}', 'rejected')">Reject</button>
+            <button class="btn-ui btn-ui-primary" onclick="switchView('view-approvals')">Review (${approvals.length})</button>
           </div>
         </div>
-      `).join('');
+      `;
     }
 
-    // Render in Approvals Tab
+    // Render in dedicated Approvals View
     if (fullContainer) {
       fullContainer.innerHTML = approvals.map(a => `
         <div class="glass-panel" style="padding:18px; margin-bottom:12px;">
           <div style="display:flex; justify-content:space-between; align-items:flex-start;">
             <div>
-              <div style="font-size:15px; font-weight:700; color:var(--status-amber-text);">${escapeHtml(a.action_type)}</div>
-              <div style="font-size:13.5px; color:var(--text-main); margin-top:4px; font-weight:600;">${escapeHtml(a.action_payload.title || 'Requested Execution')}</div>
+              <div style="font-size:14.5px; font-weight:700; color:var(--status-amber-text);">${escapeHtml(a.action_type)}</div>
+              <div style="font-size:13px; color:var(--text-main); margin-top:4px; font-weight:600;">${escapeHtml(a.action_payload.title || 'Requested Execution')}</div>
               <div style="font-size:12px; color:var(--text-secondary); margin-top:4px;">
                 Policy Reason: ${escapeHtml(a.action_payload.reason || 'Level 4 Approval Required')}
               </div>
@@ -206,18 +212,35 @@ async function decideApproval(id, decision) {
 // Active Objectives & Tasks
 async function refreshObjectives() {
   try {
-    const tasks = await api('/tasks?limit=10');
+    const [tasks, learningObjs] = await Promise.all([
+      api('/tasks?limit=10').catch(() => []),
+      api('/learning/objectives').catch(() => [])
+    ]);
+
     const container = document.getElementById('command-objectives-grid');
     const fullContainer = document.getElementById('all-objectives-grid');
-    
-    if (!tasks || tasks.length === 0) {
-      const empty = '<div style="color:var(--text-muted); font-size:13px; padding:12px;">No active objectives. Give VAL a goal above to begin.</div>';
-      if (container) container.innerHTML = empty;
-      if (fullContainer) fullContainer.innerHTML = empty;
-      return;
-    }
 
-    const cardsHtml = tasks.map(t => {
+    const cards = [];
+
+    // Add Learning Objectives
+    learningObjs.forEach(o => {
+      cards.push({
+        title: `${o.subject}: Master Subject`,
+        desc: o.goal || 'Learn subject well enough to teach the Founder.',
+        status: o.status,
+        progress: Math.round(o.progress_score),
+        tagClass: 'learning',
+        agent: o.agent_name,
+        currentActivity: o.current_topic || 'Evaluating',
+        nextAction: o.progress_score >= 100 ? 'Teach Founder' : 'Derivatives and Differentiation Rules',
+        created: o.created_at,
+        isLearning: true,
+        id: o.objective_id
+      });
+    });
+
+    // Add Execution Tasks
+    tasks.forEach(t => {
       const isComplete = t.status === 'succeeded';
       const isWaiting = t.status === 'waiting_approval';
       const steps = t.plan ? (t.plan.steps || []) : [];
@@ -227,27 +250,97 @@ async function refreshObjectives() {
       const tagClass = isComplete ? 'succeeded' : (isWaiting ? 'pending' : 'learning');
       const tagText = isComplete ? 'Completed' : (isWaiting ? 'Needs Approval' : `${progress}%`);
 
-      return `
+      cards.push({
+        title: t.title.replace('Objective: ', ''),
+        desc: t.description || t.title,
+        status: t.status,
+        progress: progress,
+        tagClass: tagClass,
+        tagText: tagText,
+        agent: 'VAL Core',
+        currentActivity: isComplete ? 'Completed Execution' : (isWaiting ? 'Awaiting Level 4 Sign-Off' : 'Running Steps'),
+        nextAction: isWaiting ? 'Awaiting Founder Approval' : 'None',
+        created: t.created_at,
+        isLearning: false,
+        id: t.task_id
+      });
+    });
+
+    if (cards.length === 0) {
+      const empty = '<div style="color:var(--text-muted); font-size:13px; padding:12px;">No active objectives. Instruct VAL above to begin.</div>';
+      if (container) container.innerHTML = empty;
+      if (fullContainer) fullContainer.innerHTML = empty;
+      return;
+    }
+
+    // Command Center 3-grid (limit to top 3)
+    if (container) {
+      container.innerHTML = cards.slice(0, 3).map(c => `
         <div class="objective-card" onclick="switchView('view-objectives')">
           <div class="objective-top">
-            <span class="objective-name">${escapeHtml(t.title.replace('Objective: ', ''))}</span>
-            <span class="pill-tag ${tagClass}">${tagText}</span>
+            <span class="objective-name">${escapeHtml(c.title)}</span>
+            <span class="pill-tag ${c.tagClass}">${c.tagText || (c.progress + '%')}</span>
           </div>
           <div class="progress-track">
-            <div class="progress-fill" style="width: ${progress}%;"></div>
+            <div class="progress-fill" style="width: ${c.progress}%;"></div>
           </div>
           <div class="objective-status-line">
-            <span>Workforce: <strong>VAL Core</strong></span>
-            <span>${formatTimeAgo(t.created_at)}</span>
+            <span>Agent: <strong>${escapeHtml(c.agent)}</strong></span>
+            <span>${formatTimeAgo(c.created)}</span>
           </div>
         </div>
-      `;
-    }).join('');
+      `).join('');
+    }
 
-    if (container) container.innerHTML = cardsHtml;
-    if (fullContainer) fullContainer.innerHTML = cardsHtml;
+    // Full Objectives View (rich detailed cards)
+    if (fullContainer) {
+      fullContainer.innerHTML = cards.map(c => `
+        <div class="glass-panel" style="padding:18px;">
+          <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+            <div>
+              <div style="font-size:15px; font-weight:700; color:var(--text-main);">${escapeHtml(c.title)}</div>
+              <div style="font-size:12.5px; color:var(--text-secondary); margin-top:3px;">${escapeHtml(c.desc)}</div>
+            </div>
+            <span class="pill-tag ${c.tagClass}">${c.tagText || (c.progress + '%')}</span>
+          </div>
+
+          <div style="margin-top:14px;">
+            <div style="display:flex; justify-content:space-between; font-size:11.5px; margin-bottom:5px; color:var(--text-muted);">
+              <span>Progress: <strong>${c.progress}%</strong></span>
+              <span>Assigned: <strong>${escapeHtml(c.agent)}</strong></span>
+            </div>
+            <div class="progress-track">
+              <div class="progress-fill" style="width: ${c.progress}%;"></div>
+            </div>
+          </div>
+
+          <div style="margin-top:14px; display:grid; grid-template-columns:1fr 1fr; gap:10px; font-size:12px;">
+            <div style="background:var(--surface-elevated); padding:8px 12px; border-radius:var(--radius-sm); border:1px solid var(--border);">
+              <span style="color:var(--text-muted); font-size:10.5px; text-transform:uppercase;">Current Activity</span>
+              <div style="color:var(--text-main); font-weight:600; margin-top:2px;">${escapeHtml(c.currentActivity)}</div>
+            </div>
+            <div style="background:var(--surface-elevated); padding:8px 12px; border-radius:var(--radius-sm); border:1px solid var(--border);">
+              <span style="color:var(--text-muted); font-size:10.5px; text-transform:uppercase;">Next Action</span>
+              <div style="color:var(--accent); font-weight:600; margin-top:2px;">${escapeHtml(c.nextAction)}</div>
+            </div>
+          </div>
+
+          <div style="margin-top:14px; display:flex; justify-content:space-between; align-items:center; font-size:11.5px; color:var(--text-muted);">
+            <span>Started: ${formatTimeAgo(c.created)}</span>
+            ${c.isLearning ? `<button class="btn-ui btn-ui-secondary" onclick="switchView('view-learning')">View Curriculum</button>` : ''}
+          </div>
+        </div>
+      `).join('');
+    }
   } catch (e) {
     console.error('Objectives refresh error:', e);
+  }
+}
+
+function promptNewObjective() {
+  const goal = prompt('Enter a new objective for VAL:');
+  if (goal && goal.trim()) {
+    sendCommand(goal.trim());
   }
 }
 
@@ -262,8 +355,9 @@ async function refreshAgents() {
 
     const cardsHtml = agents.map(a => {
       const isLearning = a.name.includes('CALCULUS');
-      const statusText = isLearning ? 'Learning - 72%' : (a.status === 'active' ? 'Ready' : a.status);
+      const statusText = isLearning ? 'Learning - 20%' : (a.status === 'active' ? 'Ready' : a.status);
       const tagClass = isLearning ? 'learning' : 'succeeded';
+      const toolsCount = (a.config.tool_allow_list || []).length;
 
       return `
         <div class="agent-card" onclick="openAgentModal('${a.name}')">
@@ -277,7 +371,7 @@ async function refreshAgents() {
           </div>
           <div class="agent-badges">
             <span class="agent-badge-pill">v${escapeHtml(a.version)}</span>
-            <span class="agent-badge-pill">${(a.config.tool_allow_list || []).length} capabilities</span>
+            <span class="agent-badge-pill">${toolsCount} capabilities</span>
             <span class="agent-badge-pill">Level ${a.permissions.max_level || 2}</span>
           </div>
         </div>
@@ -291,10 +385,10 @@ async function refreshAgents() {
   }
 }
 
-// Activity Feed (Clean Human Readable)
+// Activity Feed (Human Readable Timeline)
 async function refreshActivity() {
   try {
-    const items = await api('/activity?limit=8');
+    const items = await api('/activity?limit=10');
     const container = document.getElementById('command-activity-feed');
     const fullContainer = document.getElementById('all-activity-feed');
 
@@ -306,7 +400,7 @@ async function refreshActivity() {
     }
 
     const html = items.map(act => `
-      <div class="activity-item" onclick="switchView('view-adv-audit')">
+      <div class="activity-item" onclick="switchView('view-adv-security')">
         <div class="activity-left">
           <span class="activity-bullet"></span>
           <span class="activity-text">${escapeHtml(act.title)}</span>
@@ -347,35 +441,35 @@ async function refreshLearning() {
         <div style="display:flex; justify-content:space-between; align-items:flex-start;">
           <div>
             <h3 style="font-size:18px; color:var(--text-main); font-weight:700;">${escapeHtml(o.subject.toUpperCase())}</h3>
-            <div style="color:var(--text-secondary); font-size:13px; margin-top:2px;">Specialized Intelligence: <strong>${escapeHtml(o.agent_name)}</strong></div>
+            <div style="color:var(--text-secondary); font-size:12.5px; margin-top:2px;">Specialized Intelligence: <strong>${escapeHtml(o.agent_name)}</strong></div>
           </div>
           <span class="pill-tag learning">${escapeHtml(o.status.toUpperCase())}</span>
         </div>
 
         <div style="margin-top:16px;">
-          <div style="display:flex; justify-content:space-between; font-size:12.5px; margin-bottom:6px;">
+          <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:6px;">
             <span>Measured Mastery: <strong>${o.progress_score}%</strong></span>
             <span>Teaching Readiness: <strong>${o.teaching_readiness}%</strong></span>
           </div>
-          <div class="progress-track" style="height:8px;">
+          <div class="progress-track" style="height:7px;">
             <div class="progress-fill" style="width: ${o.progress_score}%;"></div>
           </div>
         </div>
 
-        <div style="margin-top:16px; display:grid; grid-template-columns:1fr 1fr; gap:12px; font-size:13px;">
-          <div style="background:var(--bg-subtle); padding:10px 14px; border-radius:var(--radius-sm); border:1px solid var(--border);">
-            <div style="font-size:11px; color:var(--text-muted); text-transform:uppercase; font-weight:700;">Current Topic</div>
+        <div style="margin-top:16px; display:grid; grid-template-columns:1fr 1fr; gap:12px; font-size:12.5px;">
+          <div style="background:var(--surface-elevated); padding:10px 14px; border-radius:var(--radius-sm); border:1px solid var(--border);">
+            <div style="font-size:10.5px; color:var(--text-muted); text-transform:uppercase; font-weight:700;">Current Topic</div>
             <div style="color:var(--text-main); font-weight:600; margin-top:2px;">${escapeHtml(o.current_topic || 'Complete')}</div>
           </div>
-          <div style="background:var(--bg-subtle); padding:10px 14px; border-radius:var(--radius-sm); border:1px solid var(--border);">
-            <div style="font-size:11px; color:var(--text-muted); text-transform:uppercase; font-weight:700;">Weak Areas Detected</div>
+          <div style="background:var(--surface-elevated); padding:10px 14px; border-radius:var(--radius-sm); border:1px solid var(--border);">
+            <div style="font-size:10.5px; color:var(--text-muted); text-transform:uppercase; font-weight:700;">Weak Areas Detected</div>
             <div style="color:${o.detected_weaknesses.length ? 'var(--status-amber-text)' : 'var(--status-green-text)'}; font-weight:600; margin-top:2px;">
               ${o.detected_weaknesses.length ? escapeHtml(o.detected_weaknesses.join('; ')) : 'None detected - High rigor'}
             </div>
           </div>
         </div>
 
-        <div style="margin-top:18px; display:flex; gap:10px;">
+        <div style="margin-top:16px; display:flex; gap:10px;">
           <button class="btn-ui btn-ui-primary" onclick="advanceLearningStep('${o.objective_id}')">Run Practice Drill & Advance</button>
         </div>
       </div>
@@ -419,7 +513,7 @@ async function submitFounderTeachingForm() {
 
   const resBox = document.getElementById('founder-teach-response');
   resBox.style.display = 'block';
-  resBox.innerHTML = '<span style="color:var(--accent-blue);">Saving directive with High-Authority Founder Provenance...</span>';
+  resBox.innerHTML = '<span style="color:var(--accent);">Saving directive with High-Authority Founder Provenance...</span>';
 
   try {
     const res = await api('/learning/teach', {
@@ -429,11 +523,11 @@ async function submitFounderTeachingForm() {
     input.value = '';
     resBox.innerHTML = `
       <div style="color:var(--status-green-text); font-weight:600;">Directive Stored Successfully</div>
-      <div style="font-size:12.5px; color:var(--text-secondary); margin-top:4px;">
+      <div style="font-size:12px; color:var(--text-secondary); margin-top:4px;">
         Topic: <strong>${escapeHtml(res.classified_topic)}</strong> (Scope: ${escapeHtml(res.scope)})
       </div>
       ${res.clarifying_questions && res.clarifying_questions.length ? `
-        <div style="margin-top:8px; font-size:12px; color:var(--status-amber-text);">
+        <div style="margin-top:8px; font-size:11.5px; color:var(--status-amber-text);">
           <strong>Proactive Clarification:</strong> ${res.clarifying_questions.map(escapeHtml).join('<br>')}
         </div>
       ` : ''}
@@ -454,13 +548,13 @@ async function refreshTeachingsList() {
       return;
     }
     container.innerHTML = teachings.map(t => `
-      <div style="background:var(--surface); border:1px solid var(--border); padding:16px; border-radius:var(--radius-sm); margin-bottom:12px; box-shadow:var(--shadow-sm);">
+      <div style="background:var(--surface-elevated); border:1px solid var(--border); padding:14px; border-radius:var(--radius-sm); margin-bottom:10px;">
         <div style="display:flex; justify-content:space-between; align-items:center;">
-          <strong style="color:var(--text-main); font-size:14px;">${escapeHtml(t.title)}</strong>
+          <strong style="color:var(--text-main); font-size:13.5px;">${escapeHtml(t.title)}</strong>
           <span class="pill-tag learning" style="font-size:10px;">FOUNDER PROVENANCE</span>
         </div>
-        <div style="font-size:13.5px; color:var(--text-secondary); margin-top:8px; line-height:1.5;">"${escapeHtml(t.content)}"</div>
-        <div style="font-size:11.5px; color:var(--text-muted); margin-top:8px;">Recorded ${formatTimeAgo(t.created_at)}</div>
+        <div style="font-size:13px; color:var(--text-secondary); margin-top:6px; line-height:1.5;">"${escapeHtml(t.content)}"</div>
+        <div style="font-size:11px; color:var(--text-muted); margin-top:6px;">Recorded ${formatTimeAgo(t.created_at)}</div>
       </div>
     `).join('');
   } catch (e) {
@@ -468,15 +562,25 @@ async function refreshTeachingsList() {
   }
 }
 
-// Agent Factory Form
+// Agent Factory Modal Controls
+function openCreateAgentModal() {
+  document.getElementById('factory-modal').classList.add('open');
+}
+
+function closeCreateAgentModal() {
+  document.getElementById('factory-modal').classList.remove('open');
+  const resBox = document.getElementById('factory-build-result');
+  if (resBox) resBox.style.display = 'none';
+}
+
 async function submitAgentFactoryForm() {
   const domain = document.getElementById('factory-domain-input').value.trim();
   const purpose = document.getElementById('factory-purpose-input').value.trim();
   const resBox = document.getElementById('factory-build-result');
-  if (!domain || !purpose) return alert('Please enter what the AI should specialize in and what it should do.');
+  if (!domain || !purpose) return alert('Please enter what the agent should specialize in and what it should accomplish.');
 
   resBox.style.display = 'block';
-  resBox.innerHTML = '<span style="color:var(--accent-blue);">Manufacturing specialized agent in sandbox...</span>';
+  resBox.innerHTML = '<span style="color:var(--accent);">Manufacturing specialized agent in sandbox...</span>';
 
   try {
     const res = await api('/agents/factory/build', {
@@ -487,13 +591,14 @@ async function submitAgentFactoryForm() {
     });
     resBox.innerHTML = `
       <div style="color:var(--status-green-text); font-weight:700;">${escapeHtml(res.agent_name)} Created & Validated</div>
-      <div style="font-size:12.5px; color:var(--text-secondary); margin-top:4px;">
+      <div style="font-size:12px; color:var(--text-secondary); margin-top:4px;">
         Sandbox Validation: <strong>PASSED</strong> (${res.test_results.length} tests verified)
       </div>
     `;
     document.getElementById('factory-domain-input').value = '';
     document.getElementById('factory-purpose-input').value = '';
     await refreshAgents();
+    setTimeout(closeCreateAgentModal, 1800);
   } catch (e) {
     resBox.innerHTML = `<span style="color:var(--status-red-text);">Factory build error: ${escapeHtml(e.message)}</span>`;
   }
@@ -503,12 +608,10 @@ async function submitAgentFactoryForm() {
 async function sendCommand(text) {
   if (!text) return;
   
-  // Switch to chat view
   switchView('view-chat');
   
   const history = document.getElementById('chat-history-box');
   if (history) {
-    // Append user message
     const userRow = document.createElement('div');
     userRow.className = 'msg-row user';
     userRow.innerHTML = `<div class="msg-bubble">${escapeHtml(text)}</div>`;
@@ -567,7 +670,7 @@ function handleChatSubmit() {
   }
 }
 
-// Progressive Disclosure: Agent Modal
+// Progressive Disclosure: Agent Detail Modal
 async function openAgentModal(agentName) {
   try {
     const agent = await api(`/agents/${agentName}`);
@@ -625,11 +728,11 @@ async function refreshAdvancedTools() {
     const container = document.getElementById('adv-tools-list');
     if (!container) return;
     container.innerHTML = tools.map(t => `
-      <div style="background:var(--surface); border:1px solid var(--border); padding:12px 16px; border-radius:var(--radius-sm); margin-bottom:8px; display:flex; justify-content:space-between; align-items:center; box-shadow:var(--shadow-sm);">
+      <div style="background:var(--surface); border:1px solid var(--border); padding:12px 14px; border-radius:var(--radius-sm); margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
         <div>
           <strong style="color:var(--text-main); font-size:13.5px;">${escapeHtml(t.name)}</strong>
-          <span style="font-size:11.5px; color:var(--text-muted); margin-left:8px;">[Level ${t.required_permission_level}]</span>
-          <div style="font-size:12.5px; color:var(--text-secondary); margin-top:2px;">${escapeHtml(t.description)}</div>
+          <span style="font-size:11px; color:var(--text-muted); margin-left:8px;">[Level ${t.required_permission_level}]</span>
+          <div style="font-size:12px; color:var(--text-secondary); margin-top:2px;">${escapeHtml(t.description)}</div>
         </div>
         <span class="pill-tag ${t.risk_class === 'high' ? 'pending' : 'succeeded'}">${escapeHtml(t.risk_class.toUpperCase())}</span>
       </div>
@@ -639,15 +742,39 @@ async function refreshAdvancedTools() {
   }
 }
 
+async function refreshAdvancedMemory() {
+  try {
+    const memory = await api('/memory');
+    const container = document.getElementById('adv-memory-container');
+    if (!container) return;
+    if (!memory || memory.length === 0) {
+      container.innerHTML = '<div style="color:var(--text-muted); padding:16px;">No working memory records.</div>';
+      return;
+    }
+    container.innerHTML = memory.map(m => `
+      <div class="glass-panel" style="padding:14px; margin-bottom:10px;">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <strong style="color:var(--accent); font-family:var(--font-mono); font-size:12px;">${escapeHtml(m.key)}</strong>
+          <span class="pill-tag learning" style="font-size:10px;">${escapeHtml(m.scope_type.toUpperCase())}</span>
+        </div>
+        <pre style="margin-top:8px; font-family:var(--font-mono); font-size:11px; color:var(--text-secondary); background:var(--surface-elevated); padding:8px; border-radius:var(--radius-sm); overflow-x:auto;">${escapeHtml(JSON.stringify(m.content, null, 2))}</pre>
+        <div style="font-size:10.5px; color:var(--text-muted); margin-top:6px;">Recorded: ${formatTimeAgo(m.created_at)}</div>
+      </div>
+    `).join('');
+  } catch (e) {
+    console.error('Memory error:', e);
+  }
+}
+
 async function refreshAdvancedAudit() {
   try {
-    const logs = await api('/audit?limit=30');
+    const logs = await api('/audit?limit=25');
     const container = document.getElementById('adv-audit-stream');
     if (!container) return;
     container.innerHTML = logs.map(l => `
-      <div class="activity-item" style="font-family:var(--font-mono); font-size:11.5px;">
+      <div class="activity-item" style="font-family:var(--font-mono); font-size:11px;">
         <span style="color:var(--text-muted);">${new Date(l.created_at).toLocaleTimeString()}</span>
-        <span style="color:var(--accent-blue); font-weight:600;">[${escapeHtml(l.actor_type)}]</span>
+        <span style="color:var(--accent); font-weight:600;">[${escapeHtml(l.actor_type)}]</span>
         <span style="color:var(--text-main);">${escapeHtml(l.action)}</span>
         <span style="color:var(--text-dim); margin-left:auto;">${escapeHtml(l.resource_type || '-')}</span>
       </div>
@@ -681,15 +808,6 @@ async function triggerEmergency() {
   }
 }
 
-async function clearEmergency() {
-  try {
-    await api('/control/emergency/clear', { method: 'POST' });
-    await refreshSystemStatus();
-  } catch (e) {
-    alert('Clear emergency failed: ' + e.message);
-  }
-}
-
 // Helpers
 function escapeHtml(str) {
   if (!str) return '';
@@ -700,7 +818,7 @@ function formatAssistantMarkdown(text) {
   return escapeHtml(text)
     .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
     .replace(/\*(.*?)\*/g, '<em>$1</em>')
-    .replace(/`(.*?)`/g, '<code style="background:var(--bg-subtle); border:1px solid var(--border); padding:1px 5px; border-radius:3px; font-family:var(--font-mono); font-size:12.5px;">$1</code>');
+    .replace(/`(.*?)`/g, '<code style="background:var(--surface-elevated); padding:1px 5px; border-radius:3px; font-family:var(--font-mono); font-size:12px;">$1</code>');
 }
 
 // Master Refresh
@@ -720,6 +838,7 @@ document.addEventListener('DOMContentLoaded', () => {
   refreshLearning();
   refreshTeachingsList();
   refreshAdvancedTools();
+  refreshAdvancedMemory();
   refreshAdvancedAudit();
   setInterval(refreshAll, 3500);
 });

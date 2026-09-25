@@ -8,13 +8,18 @@
 </head>
 <body>
 
-  <!-- Top Minimalist Header -->
+  <!-- Top Header -->
   <header class="top-header">
-    <div class="brand-wrapper" onclick="switchView('view-command')">
-      <div class="brand-symbol">V</div>
-      <div>
-        <div class="brand-name">VAL</div>
-        <div class="brand-badge">Autonomous Intelligence</div>
+    <div class="brand-wrapper">
+      <button class="mobile-nav-toggle" onclick="toggleMobileSidebar()" aria-label="Toggle navigation">
+        <svg viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+      </button>
+      <div class="brand-wrapper" onclick="switchView('view-command')">
+        <div class="brand-symbol">V</div>
+        <div>
+          <div class="brand-name">VAL</div>
+          <div class="brand-badge">Autonomous Intelligence</div>
+        </div>
       </div>
     </div>
 
@@ -37,9 +42,9 @@
   <div class="app-container">
     
     <!-- Clean Primary Navigation Sidebar -->
-    <aside class="app-sidebar">
+    <aside class="app-sidebar" id="app-sidebar">
       <div class="sidebar-group">
-        <div class="sidebar-title">Personal AI</div>
+        <div class="sidebar-title">VAL</div>
         
         <div class="nav-link active" data-view="view-command" onclick="switchView('view-command')">
           <span class="nav-icon">
@@ -52,7 +57,7 @@
           <span class="nav-icon">
             <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
           </span>
-          <span>Chat with VAL</span>
+          <span>Chat</span>
         </div>
 
         <div class="nav-link" data-view="view-objectives" onclick="switchView('view-objectives')">
@@ -66,7 +71,7 @@
           <span class="nav-icon">
             <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
           </span>
-          <span>Workforce</span>
+          <span>Agents</span>
         </div>
 
         <div class="nav-link" data-view="view-learning" onclick="switchView('view-learning')">
@@ -76,11 +81,11 @@
           <span>Learning</span>
         </div>
 
-        <div class="nav-link" data-view="view-teaching" onclick="switchView('view-teaching')">
+        <div class="nav-link" data-view="view-projects" onclick="switchView('view-projects')">
           <span class="nav-icon">
-            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"></circle><line x1="12" y1="2" x2="12" y2="4"></line><line x1="12" y1="20" x2="12" y2="22"></line><line x1="4.93" y1="4.93" x2="6.34" y2="6.34"></line><line x1="17.66" y1="17.66" x2="19.07" y2="19.07"></line><line x1="2" y1="12" x2="4" y2="12"></line><line x1="20" y1="12" x2="22" y2="12"></line><line x1="4.93" y1="19.07" x2="6.34" y2="17.66"></line><line x1="17.66" y1="6.34" x2="19.07" y2="4.93"></line></svg>
+            <svg viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
           </span>
-          <span>Teach VAL</span>
+          <span>Projects</span>
         </div>
 
         <div class="nav-link" data-view="view-activity" onclick="switchView('view-activity')">
@@ -107,32 +112,53 @@
         </div>
         
         <div class="advanced-menu open" id="advanced-menu">
+          <div class="nav-link" data-view="view-adv-memory" onclick="switchView('view-adv-memory')">
+            <span class="nav-icon">
+              <svg viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg>
+            </span>
+            <span>Memory</span>
+          </div>
+
+          <div class="nav-link" data-view="view-adv-experiments" onclick="switchView('view-adv-experiments')">
+            <span class="nav-icon">
+              <svg viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+            </span>
+            <span>Experiments</span>
+          </div>
+
           <div class="nav-link" data-view="view-adv-sandbox" onclick="switchView('view-adv-sandbox')">
             <span class="nav-icon">
               <svg viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
             </span>
-            <span>Code Sandbox</span>
+            <span>Sandbox</span>
           </div>
 
           <div class="nav-link" data-view="view-adv-tools" onclick="switchView('view-adv-tools')">
             <span class="nav-icon">
               <svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>
             </span>
-            <span>Tool Registry</span>
+            <span>Tools</span>
           </div>
 
-          <div class="nav-link" data-view="view-adv-audit" onclick="switchView('view-adv-audit')">
+          <div class="nav-link" data-view="view-adv-models" onclick="switchView('view-adv-models')">
             <span class="nav-icon">
-              <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+              <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
             </span>
-            <span>Audit Stream</span>
+            <span>Models</span>
           </div>
 
           <div class="nav-link" data-view="view-adv-system" onclick="switchView('view-adv-system')">
             <span class="nav-icon">
               <svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect><rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect><line x1="6" y1="6" x2="6.01" y2="6"></line><line x1="6" y1="18" x2="6.01" y2="18"></line></svg>
             </span>
-            <span>Hardware & Models</span>
+            <span>System</span>
+          </div>
+
+          <div class="nav-link" data-view="view-adv-security" onclick="switchView('view-adv-security')">
+            <span class="nav-icon">
+              <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+            </span>
+            <span>Security</span>
           </div>
         </div>
 
@@ -155,7 +181,7 @@
       <!-- ========================================================================= -->
       <section id="view-command" class="view-section active">
         
-        <!-- Floating Level 4 Approval Banner -->
+        <!-- NEEDS YOUR ATTENTION: Floating Level 4 Approval Banner -->
         <div id="approval-banner-container"></div>
 
         <!-- Hero Greeting & Conversational Command Bar -->
@@ -167,7 +193,7 @@
         <!-- Command Input -->
         <div class="command-input-container">
           <div class="command-bar">
-            <textarea id="hero-command-input" rows="1" placeholder="Message VAL or define an objective..." onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();handleHeroCommandSubmit();}"></textarea>
+            <textarea id="hero-command-input" rows="1" placeholder="Talk to VAL..." onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();handleHeroCommandSubmit();}"></textarea>
             <button class="command-send-btn" onclick="handleHeroCommandSubmit()" title="Execute">
               <svg viewBox="0 0 24 24"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
             </button>
@@ -175,17 +201,17 @@
 
           <!-- Quick Action Buttons -->
           <div class="hero-quick-actions">
-            <button class="action-chip" onclick="sendCommand('Learn calculus well enough to teach me')">
-              <span>+ Learn Calculus</span>
+            <button class="action-chip" onclick="switchView('view-objectives')">
+              <span>+ Objective</span>
             </button>
-            <button class="action-chip" onclick="switchView('view-factory')">
+            <button class="action-chip" onclick="openCreateAgentModal()">
               <span>+ Create Agent</span>
             </button>
-            <button class="action-chip" onclick="switchView('view-teaching')">
-              <span>+ Teach VAL Principle</span>
+            <button class="action-chip" onclick="sendCommand('Learn calculus well enough to teach me')">
+              <span>+ Learn Something</span>
             </button>
-            <button class="action-chip" onclick="sendCommand('Run system diagnostics on hardware and verify memory readiness')">
-              <span>+ Verify Hardware</span>
+            <button class="action-chip" onclick="switchView('view-teaching')">
+              <span>+ Teach VAL</span>
             </button>
           </div>
         </div>
@@ -197,7 +223,7 @@
             <span class="section-link" onclick="switchView('view-objectives')">View all &rarr;</span>
           </div>
           <div class="cards-grid-3" id="command-objectives-grid" style="margin-top:10px;">
-            <!-- Rendered dynamically -->
+            <!-- Rendered dynamically from /learning/objectives and /tasks -->
           </div>
         </div>
 
@@ -208,7 +234,7 @@
             <span class="section-link" onclick="switchView('view-workforce')">Manage agents &rarr;</span>
           </div>
           <div class="cards-grid-3" id="command-workforce-grid" style="margin-top:10px;">
-            <!-- Rendered dynamically -->
+            <!-- Rendered dynamically from /agents -->
           </div>
         </div>
 
@@ -219,7 +245,7 @@
             <span class="section-link" onclick="switchView('view-activity')">Full history &rarr;</span>
           </div>
           <div class="glass-panel activity-card" id="command-activity-feed" style="margin-top:10px;">
-            <!-- Rendered dynamically -->
+            <!-- Rendered dynamically from /activity -->
           </div>
         </div>
 
@@ -234,12 +260,12 @@
             <div class="msg-row assistant">
               <div class="msg-bubble">
                 Good afternoon, Tomiwa. I am VAL, your personal autonomous intelligence.
-                Tell me what you'd like to accomplish, and I will structure the work, mobilize your workforce, and keep you informed of our progress.
+                Tell me what you would like to accomplish, and I will structure the work, mobilize your workforce, and keep you informed of our progress.
               </div>
             </div>
           </div>
           <div class="chat-bar-footer">
-            <input id="chat-text-input" placeholder="Message VAL..." onkeydown="if(event.key==='Enter')handleChatSubmit()">
+            <input id="chat-text-input" placeholder="Talk to VAL..." onkeydown="if(event.key==='Enter')handleChatSubmit()">
             <button class="btn-ui btn-ui-primary" onclick="handleChatSubmit()">Send</button>
           </div>
         </div>
@@ -254,6 +280,7 @@
             <h2 style="font-size:20px; font-weight:700; color:var(--text-main);">Autonomous Objectives</h2>
             <p style="font-size:13px; color:var(--text-secondary); margin-top:2px;">Track multi-step plans and agent coordination</p>
           </div>
+          <button class="btn-ui btn-ui-primary" onclick="promptNewObjective()">+ New Objective</button>
         </div>
         <div class="cards-grid-2" id="all-objectives-grid">
           <!-- Rendered dynamically -->
@@ -269,7 +296,7 @@
             <h2 style="font-size:20px; font-weight:700; color:var(--text-main);">Your AI Workforce</h2>
             <p style="font-size:13px; color:var(--text-secondary); margin-top:2px;">Specialized autonomous intelligences working on your behalf</p>
           </div>
-          <button class="btn-ui btn-ui-primary" onclick="switchView('view-factory')">+ Create New Agent</button>
+          <button class="btn-ui btn-ui-primary" onclick="openCreateAgentModal()">+ Create Agent</button>
         </div>
         <div class="cards-grid-3" id="all-workforce-grid">
           <!-- Rendered dynamically -->
@@ -277,38 +304,7 @@
       </section>
 
       <!-- ========================================================================= -->
-      <!-- VIEW 5: AGENT FACTORY -->
-      <!-- ========================================================================= -->
-      <section id="view-factory" class="view-section">
-        <div class="glass-panel" style="padding:28px; max-width:680px; margin:0 auto; width:100%;">
-          <h2 style="font-size:20px; font-weight:700; color:var(--text-main);">Create a New VAL Agent</h2>
-          <p style="font-size:13px; color:var(--text-secondary); margin-top:4px;">
-            The Agent Factory autonomously generates configuration, restricts safe tool boundaries, and validates competencies inside the sandbox.
-          </p>
-
-          <div style="margin-top:24px; display:flex; flex-direction:column; gap:18px;">
-            <div>
-              <label style="font-size:12px; font-weight:700; text-transform:uppercase; color:var(--text-muted); display:block; margin-bottom:6px;">What should this AI specialize in?</label>
-              <input id="factory-domain-input" placeholder="e.g. Calculus, Python Systems, Aerospace Engineering, Financial Modeling" style="width:100%;">
-            </div>
-
-            <div>
-              <label style="font-size:12px; font-weight:700; text-transform:uppercase; color:var(--text-muted); display:block; margin-bottom:6px;">What should it do?</label>
-              <textarea id="factory-purpose-input" rows="3" placeholder="e.g. Learn calculus well enough to teach me and provide rigorous step-by-step proofs." style="width:100%; resize:vertical;"></textarea>
-            </div>
-
-            <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:8px;">
-              <button class="btn-ui btn-ui-secondary" onclick="switchView('view-workforce')">Cancel</button>
-              <button class="btn-ui btn-ui-primary" onclick="submitAgentFactoryForm()">Manufacture Agent</button>
-            </div>
-
-            <div id="factory-build-result" style="display:none; padding:14px; background:var(--bg-subtle); border-radius:var(--radius-sm); border:1px solid var(--border);"></div>
-          </div>
-        </div>
-      </section>
-
-      <!-- ========================================================================= -->
-      <!-- VIEW 6: LEARNING SYSTEM -->
+      <!-- VIEW 5: LEARNING SYSTEM -->
       <!-- ========================================================================= -->
       <section id="view-learning" class="view-section">
         <div class="section-header">
@@ -321,44 +317,64 @@
         <div id="learning-cards-container">
           <!-- Rendered dynamically -->
         </div>
-      </section>
-
-      <!-- ========================================================================= -->
-      <!-- VIEW 7: FOUNDER PERSONAL TEACHING -->
-      <!-- ========================================================================= -->
-      <section id="view-teaching" class="view-section">
-        <div class="glass-panel" style="padding:28px; max-width:760px; margin:0 auto; width:100%;">
-          <h2 style="font-size:20px; font-weight:700; color:var(--text-main);">Teach VAL Personally</h2>
-          <p style="font-size:13px; color:var(--text-secondary); margin-top:4px;">
-            Teach VAL your operational principles, company vision, and preferences. Directives are tagged with high-authority Founder provenance and shared with authorized workforce agents.
-          </p>
-
-          <div style="margin-top:20px; display:flex; flex-direction:column; gap:14px;">
-            <textarea id="founder-teach-input" rows="4" placeholder="e.g. 'VAL, this is how I want our company to operate: always run sandbox security checks before writing code, and prioritize data privacy over external cloud offloading.'" style="width:100%; line-height:1.5;"></textarea>
-
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-              <select id="founder-teach-scope" style="padding:8px 12px; border-radius:var(--radius-sm); font-size:13px; width:220px;">
-                <option value="company">Company-wide Scope</option>
-                <option value="project">Project Scope</option>
-                <option value="agent">Specialized Agent Scope</option>
-              </select>
-              <button class="btn-ui btn-ui-primary" onclick="submitFounderTeachingForm()">Store Directive</button>
-            </div>
-
-            <div id="founder-teach-response" style="display:none; padding:12px; background:var(--bg-subtle); border-radius:var(--radius-sm); border:1px solid var(--border);"></div>
-          </div>
-        </div>
 
         <div style="margin-top:24px;">
-          <h3 style="font-size:15px; font-weight:700; color:var(--text-main); margin-bottom:12px;">Active Founder Directives</h3>
-          <div id="stored-teachings-container">
+          <div class="section-header">
+            <div>
+              <h3 style="font-size:16px; font-weight:700; color:var(--text-main);">Founder Personal Directives</h3>
+              <p style="font-size:12.5px; color:var(--text-secondary); margin-top:2px;">Principles and company preferences taught by you</p>
+            </div>
+            <button class="btn-ui btn-ui-secondary" onclick="switchView('view-teaching')">+ Teach Principle</button>
+          </div>
+          <div id="stored-teachings-container" style="margin-top:12px;">
             <!-- Rendered dynamically -->
           </div>
         </div>
       </section>
 
       <!-- ========================================================================= -->
-      <!-- VIEW 8: ACTIVITY -->
+      <!-- VIEW 6: PROJECTS -->
+      <!-- ========================================================================= -->
+      <section id="view-projects" class="view-section">
+        <div class="section-header">
+          <div>
+            <h2 style="font-size:20px; font-weight:700; color:var(--text-main);">Autonomous Projects</h2>
+            <p style="font-size:13px; color:var(--text-secondary); margin-top:2px;">Organized strategic initiatives and cross-agent execution</p>
+          </div>
+        </div>
+        <div class="cards-grid-2" id="projects-grid">
+          <div class="glass-panel" style="padding:18px;">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+              <div>
+                <h3 style="font-size:15px; font-weight:700; color:var(--text-main);">Calculus Mastery & Tutoring System</h3>
+                <p style="font-size:12.5px; color:var(--text-secondary); margin-top:4px;">Autonomous study of calculus with verified epsilon-delta proofs and tutorial generation.</p>
+              </div>
+              <span class="pill-tag learning">Active</span>
+            </div>
+            <div style="margin-top:14px; font-size:12px; color:var(--text-secondary); display:flex; justify-content:space-between;">
+              <span>Assigned: <strong>CALCULUS.VAL</strong></span>
+              <span>Milestone: <strong>1 of 5 Completed</strong></span>
+            </div>
+          </div>
+
+          <div class="glass-panel" style="padding:18px;">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+              <div>
+                <h3 style="font-size:15px; font-weight:700; color:var(--text-main);">VAL Autonomous Core Engine</h3>
+                <p style="font-size:12.5px; color:var(--text-secondary); margin-top:4px;">Local-first autonomous runtime on Founder laptop with GitOps and fail-closed permission engine.</p>
+              </div>
+              <span class="pill-tag succeeded">Operational</span>
+            </div>
+            <div style="margin-top:14px; font-size:12px; color:var(--text-secondary); display:flex; justify-content:space-between;">
+              <span>Assigned: <strong>VAL Executive</strong></span>
+              <span>Milestone: <strong>34 Tests Passing</strong></span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================================================================= -->
+      <!-- VIEW 7: ACTIVITY -->
       <!-- ========================================================================= -->
       <section id="view-activity" class="view-section">
         <div class="section-header">
@@ -368,12 +384,12 @@
           </div>
         </div>
         <div class="glass-panel activity-card" id="all-activity-feed">
-          <!-- Rendered dynamically -->
+          <!-- Rendered dynamically from /activity -->
         </div>
       </section>
 
       <!-- ========================================================================= -->
-      <!-- VIEW 9: APPROVALS (LEVEL 4) -->
+      <!-- VIEW 8: APPROVALS (LEVEL 4) -->
       <!-- ========================================================================= -->
       <section id="view-approvals" class="view-section">
         <div class="section-header">
@@ -388,22 +404,93 @@
       </section>
 
       <!-- ========================================================================= -->
-      <!-- VIEW 10: ADVANCED - CODE SANDBOX -->
+      <!-- VIEW 9: TEACH VAL -->
       <!-- ========================================================================= -->
-      <section id="view-adv-sandbox" class="view-section">
-        <div class="glass-panel" style="padding:24px;">
-          <h3 style="font-size:16px; font-weight:700; color:var(--text-main);">Isolated Code Sandbox</h3>
-          <p style="font-size:13px; color:var(--text-secondary); margin-top:2px;">Execute Python scripts in an isolated subprocess under resource bounds and timeouts.</p>
-          <div style="margin-top:16px;">
-            <textarea id="adv-sandbox-code" rows="6" style="font-family:var(--font-mono); font-size:12.5px; background:var(--bg-subtle); border:1px solid var(--border); padding:12px; border-radius:var(--radius-sm); color:var(--text-main); width:100%;" placeholder="# Run safe Python code in sandbox&#10;import math&#10;print('Euler identity test:', math.e**(math.pi * 1j))"></textarea>
-            <button class="btn-ui btn-ui-primary" style="margin-top:10px;" onclick="runAdvancedSandbox()">Run in Sandbox</button>
-            <pre id="adv-sandbox-out" style="display:none; margin-top:12px; background:var(--bg-subtle); padding:12px; border-radius:var(--radius-sm); border:1px solid var(--border); font-family:var(--font-mono); font-size:12px; color:var(--text-main);"></pre>
+      <section id="view-teaching" class="view-section">
+        <div class="glass-panel" style="padding:24px; max-width:740px; margin:0 auto; width:100%;">
+          <h2 style="font-size:18px; font-weight:700; color:var(--text-main);">Teach VAL Personally</h2>
+          <p style="font-size:13px; color:var(--text-secondary); margin-top:4px;">
+            Teach VAL your operational principles, company vision, and preferences. Directives are tagged with high-authority Founder provenance.
+          </p>
+
+          <div style="margin-top:18px; display:flex; flex-direction:column; gap:12px;">
+            <textarea id="founder-teach-input" rows="4" placeholder="e.g. 'VAL, this is how I want our company to operate: always run sandbox security checks before writing code, and prioritize data privacy over external cloud offloading.'" style="width:100%; line-height:1.5;"></textarea>
+
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <select id="founder-teach-scope" style="padding:8px 12px; border-radius:var(--radius-sm); font-size:12.5px; width:220px;">
+                <option value="company">Company-wide Scope</option>
+                <option value="project">Project Scope</option>
+                <option value="agent">Specialized Agent Scope</option>
+              </select>
+              <button class="btn-ui btn-ui-primary" onclick="submitFounderTeachingForm()">Store Directive</button>
+            </div>
+
+            <div id="founder-teach-response" style="display:none; padding:12px; background:var(--surface-elevated); border-radius:var(--radius-sm); border:1px solid var(--border);"></div>
           </div>
         </div>
       </section>
 
       <!-- ========================================================================= -->
-      <!-- VIEW 11: ADVANCED - TOOLS REGISTRY -->
+      <!-- VIEW 10: ADVANCED - MEMORY -->
+      <!-- ========================================================================= -->
+      <section id="view-adv-memory" class="view-section">
+        <div class="section-header">
+          <div>
+            <h2 style="font-size:20px; font-weight:700; color:var(--text-main);">Working & Long-Term Memory</h2>
+            <p style="font-size:13px; color:var(--text-secondary); margin-top:2px;">Persistent memory records scoped by working, agent, and organization contexts</p>
+          </div>
+        </div>
+        <div id="adv-memory-container">
+          <!-- Rendered dynamically -->
+        </div>
+      </section>
+
+      <!-- ========================================================================= -->
+      <!-- VIEW 11: ADVANCED - EXPERIMENTS -->
+      <!-- ========================================================================= -->
+      <section id="view-adv-experiments" class="view-section">
+        <div class="section-header">
+          <div>
+            <h2 style="font-size:20px; font-weight:700; color:var(--text-main);">Autonomous Experiments & Sandbox Runs</h2>
+            <p style="font-size:13px; color:var(--text-secondary); margin-top:2px;">Track sandboxed hypothesis evaluations, agent validation runs, and tool benchmarks</p>
+          </div>
+        </div>
+        <div class="cards-grid-2">
+          <div class="glass-panel" style="padding:18px;">
+            <div style="font-weight:700; color:var(--text-main);">Agent Validation: CALCULUS.VAL</div>
+            <div style="font-size:12px; color:var(--text-secondary); margin-top:4px;">Manufactured competency verification inside isolated subprocess sandbox.</div>
+            <div style="margin-top:12px; display:flex; gap:8px;">
+              <span class="pill-tag succeeded">Passed (3/3 Tests)</span>
+              <span class="pill-tag learning">Exit Code 0</span>
+            </div>
+          </div>
+          <div class="glass-panel" style="padding:18px;">
+            <div style="font-weight:700; color:var(--text-main);">AST Calculation Safety Probe</div>
+            <div style="font-size:12px; color:var(--text-secondary); margin-top:4px;">Enforced mathematical parsing outside eval() with AST whitelist.</div>
+            <div style="margin-top:12px; display:flex; gap:8px;">
+              <span class="pill-tag succeeded">Verified Safe</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================================================================= -->
+      <!-- VIEW 12: ADVANCED - CODE SANDBOX -->
+      <!-- ========================================================================= -->
+      <section id="view-adv-sandbox" class="view-section">
+        <div class="glass-panel" style="padding:22px;">
+          <h3 style="font-size:16px; font-weight:700; color:var(--text-main);">Isolated Subprocess Code Sandbox</h3>
+          <p style="font-size:13px; color:var(--text-secondary); margin-top:2px;">Execute Python scripts in an isolated subprocess under resource bounds and timeouts.</p>
+          <div style="margin-top:16px;">
+            <textarea id="adv-sandbox-code" rows="6" style="font-family:var(--font-mono); font-size:12.5px; background:var(--surface-elevated); border:1px solid var(--border); padding:12px; border-radius:var(--radius-sm); color:var(--accent); width:100%;" placeholder="# Run safe Python code in sandbox&#10;import math&#10;print('Euler identity test:', math.e**(math.pi * 1j))"></textarea>
+            <button class="btn-ui btn-ui-primary" style="margin-top:10px;" onclick="runAdvancedSandbox()">Run in Sandbox</button>
+            <pre id="adv-sandbox-out" style="display:none; margin-top:12px; background:var(--surface-elevated); padding:12px; border-radius:var(--radius-sm); border:1px solid var(--border); font-family:var(--font-mono); font-size:12px; color:var(--text-main);"></pre>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================================================================= -->
+      <!-- VIEW 13: ADVANCED - TOOLS REGISTRY -->
       <!-- ========================================================================= -->
       <section id="view-adv-tools" class="view-section">
         <div class="section-header">
@@ -418,55 +505,93 @@
       </section>
 
       <!-- ========================================================================= -->
-      <!-- VIEW 12: ADVANCED - AUDIT STREAM -->
+      <!-- VIEW 14: ADVANCED - MODELS ROUTER -->
       <!-- ========================================================================= -->
-      <section id="view-adv-audit" class="view-section">
-        <div class="section-header">
-          <div>
-            <h2 style="font-size:20px; font-weight:700; color:var(--text-main);">Immutable Audit Stream</h2>
-            <p style="font-size:13px; color:var(--text-secondary); margin-top:2px;">Cryptographically immutable append-only event stream</p>
+      <section id="view-adv-models" class="view-section">
+        <div class="glass-panel" style="padding:22px;">
+          <h3 style="font-size:16px; font-weight:700; color:var(--text-main);">Hardware-Aware Model Router</h3>
+          <p style="font-size:13px; color:var(--text-secondary); margin-top:2px;">Automated reasoning cascade based on measured laptop compute vs cloud tier.</p>
+          
+          <div style="margin-top:16px; display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+            <div style="background:var(--surface-elevated); padding:14px; border-radius:var(--radius-sm); border:1px solid var(--border);">
+              <div style="font-size:11px; text-transform:uppercase; color:var(--text-muted); font-weight:700;">Primary Cloud Provider</div>
+              <div style="font-size:16px; font-weight:700; color:var(--text-main); margin-top:4px;">Google Gemini 1.5 Flash</div>
+              <div style="font-size:12px; color:var(--text-secondary); margin-top:2px;">High-speed multi-step planning & reasoning</div>
+            </div>
+            <div style="background:var(--surface-elevated); padding:14px; border-radius:var(--radius-sm); border:1px solid var(--border);">
+              <div style="font-size:11px; text-transform:uppercase; color:var(--text-muted); font-weight:700;">Local Offline Fallback</div>
+              <div style="font-size:16px; font-weight:700; color:var(--accent); margin-top:4px;">Local Quantized / Fallback</div>
+              <div style="font-size:12px; color:var(--text-secondary); margin-top:2px;">Deterministic task execution when offline</div>
+            </div>
           </div>
-        </div>
-        <div class="glass-panel activity-card" id="adv-audit-stream">
-          <!-- Rendered dynamically -->
         </div>
       </section>
 
       <!-- ========================================================================= -->
-      <!-- VIEW 13: ADVANCED - HARDWARE & TELEMETRY -->
+      <!-- VIEW 15: ADVANCED - SYSTEM & HARDWARE -->
       <!-- ========================================================================= -->
       <section id="view-adv-system" class="view-section">
-        <div class="glass-panel" style="padding:24px;">
-          <h3 style="font-size:16px; font-weight:700; color:var(--text-main);">Hardware Profile & Quantization Capacity</h3>
+        <div class="glass-panel" style="padding:22px;">
+          <h3 style="font-size:16px; font-weight:700; color:var(--text-main);">Hardware Profile & System Diagnostics</h3>
           <p style="font-size:13px; color:var(--text-secondary); margin-top:2px;">Measured local laptop compute vs. cloud cascade strategy</p>
 
-          <div style="margin-top:18px; display:grid; grid-template-columns:repeat(3, 1fr); gap:12px;">
-            <div style="background:var(--bg-subtle); padding:14px; border-radius:var(--radius-sm); border:1px solid var(--border);">
+          <div style="margin-top:16px; display:grid; grid-template-columns:repeat(3, 1fr); gap:12px;">
+            <div style="background:var(--surface-elevated); padding:14px; border-radius:var(--radius-sm); border:1px solid var(--border);">
               <div style="font-size:11px; text-transform:uppercase; color:var(--text-muted); font-weight:700;">CPU Architecture</div>
-              <div style="font-size:16px; font-weight:700; color:var(--text-main); margin-top:4px;">Linux x86_64</div>
+              <div style="font-size:15px; font-weight:700; color:var(--text-main); margin-top:4px;">Linux x86_64</div>
               <div style="font-size:12px; color:var(--text-secondary); margin-top:2px;">2 Cores Active</div>
             </div>
-            <div style="background:var(--bg-subtle); padding:14px; border-radius:var(--radius-sm); border:1px solid var(--border);">
+            <div style="background:var(--surface-elevated); padding:14px; border-radius:var(--radius-sm); border:1px solid var(--border);">
               <div style="font-size:11px; text-transform:uppercase; color:var(--text-muted); font-weight:700;">System Memory</div>
-              <div style="font-size:16px; font-weight:700; color:var(--text-main); margin-top:4px;">~2,048 MB RAM</div>
+              <div style="font-size:15px; font-weight:700; color:var(--text-main); margin-top:4px;">~1,984 MB RAM</div>
               <div style="font-size:12px; color:var(--text-secondary); margin-top:2px;">Tier: Lightweight</div>
             </div>
-            <div style="background:var(--bg-subtle); padding:14px; border-radius:var(--radius-sm); border:1px solid var(--border);">
-              <div style="font-size:11px; text-transform:uppercase; color:var(--text-muted); font-weight:700;">Local Model Capable</div>
-              <div style="font-size:16px; font-weight:700; color:var(--accent-blue); margin-top:4px;">INT4 Fallback</div>
-              <div style="font-size:12px; color:var(--text-secondary); margin-top:2px;">Heavy models routed to Gemini</div>
+            <div style="background:var(--surface-elevated); padding:14px; border-radius:var(--radius-sm); border:1px solid var(--border);">
+              <div style="font-size:11px; text-transform:uppercase; color:var(--text-muted); font-weight:700;">Storage Capacity</div>
+              <div style="font-size:15px; font-weight:700; color:var(--accent); margin-top:4px;">19.67 GB Free</div>
+              <div style="font-size:12px; color:var(--text-secondary); margin-top:2px;">Total: 24.08 GB</div>
             </div>
           </div>
         </div>
       </section>
 
       <!-- ========================================================================= -->
-      <!-- VIEW 14: SETTINGS -->
+      <!-- VIEW 16: ADVANCED - SECURITY & AUDIT -->
+      <!-- ========================================================================= -->
+      <section id="view-adv-security" class="view-section">
+        <div class="glass-panel" style="padding:22px;">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div>
+              <h3 style="font-size:16px; font-weight:700; color:var(--text-main);">Emergency Control Plane</h3>
+              <p style="font-size:13px; color:var(--text-secondary); margin-top:2px;">Global pause and emergency stop independently of reasoning loops</p>
+            </div>
+            <div style="display:flex; gap:8px;">
+              <button class="btn-ui btn-ui-secondary" onclick="togglePause()">Pause / Resume</button>
+              <button class="btn-ui btn-ui-danger" onclick="triggerEmergency()">Emergency Freeze</button>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top:20px;">
+          <div class="section-header">
+            <div>
+              <h3 style="font-size:16px; font-weight:700; color:var(--text-main);">Immutable Cryptographic Audit Stream</h3>
+              <p style="font-size:13px; color:var(--text-secondary); margin-top:2px;">Cryptographically append-only event trail</p>
+            </div>
+          </div>
+          <div class="glass-panel activity-card" id="adv-audit-stream" style="margin-top:10px;">
+            <!-- Rendered dynamically -->
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================================================================= -->
+      <!-- VIEW 17: SETTINGS -->
       <!-- ========================================================================= -->
       <section id="view-settings" class="view-section">
         <div class="glass-panel" style="padding:24px; max-width:700px; margin:0 auto; width:100%;">
           <h2 style="font-size:20px; font-weight:700; color:var(--text-main);">System & Integration Settings</h2>
-          <div style="margin-top:20px; display:flex; flex-direction:column; gap:14px; font-size:13.5px;">
+          <div style="margin-top:20px; display:flex; flex-direction:column; gap:14px; font-size:13px;">
             <div style="display:flex; justify-content:space-between; align-items:center; padding-bottom:12px; border-bottom:1px solid var(--border);">
               <div>
                 <strong>Founder Profile</strong>
@@ -476,13 +601,10 @@
             </div>
             <div style="display:flex; justify-content:space-between; align-items:center; padding-bottom:12px; border-bottom:1px solid var(--border);">
               <div>
-                <strong>Emergency Control Plane</strong>
-                <div style="color:var(--text-secondary); font-size:12px;">Global freeze or autonomy pause independently of reasoning loop</div>
+                <strong>File Safety Guarantee</strong>
+                <div style="color:var(--text-secondary); font-size:12px;">CANNOT_DELETE_FILES = True (Architectural Invariant)</div>
               </div>
-              <div style="display:flex; gap:8px;">
-                <button class="btn-ui btn-ui-secondary" onclick="togglePause()">Pause / Resume</button>
-                <button class="btn-ui btn-ui-danger" onclick="triggerEmergency()">Emergency Freeze</button>
-              </div>
+              <span class="pill-tag succeeded">Enforced</span>
             </div>
             <div style="display:flex; justify-content:space-between; align-items:center;">
               <div>
@@ -509,27 +631,27 @@
       </div>
       <div class="modal-body">
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; font-size:13px;">
-          <div style="padding:12px; background:var(--bg-subtle); border-radius:var(--radius-sm); border:1px solid var(--border);">
+          <div style="padding:12px; background:var(--surface-elevated); border-radius:var(--radius-sm); border:1px solid var(--border);">
             <div style="color:var(--text-muted); font-size:10.5px; text-transform:uppercase; font-weight:700;">VAL Core</div>
             <div style="font-weight:700; color:var(--status-green-text); margin-top:2px;" id="sm-core">Online</div>
           </div>
-          <div style="padding:12px; background:var(--bg-subtle); border-radius:var(--radius-sm); border:1px solid var(--border);">
+          <div style="padding:12px; background:var(--surface-elevated); border-radius:var(--radius-sm); border:1px solid var(--border);">
             <div style="color:var(--text-muted); font-size:10.5px; text-transform:uppercase; font-weight:700;">API Gateway</div>
             <div style="font-weight:700; color:var(--status-green-text); margin-top:2px;" id="sm-api">Online</div>
           </div>
-          <div style="padding:12px; background:var(--bg-subtle); border-radius:var(--radius-sm); border:1px solid var(--border);">
+          <div style="padding:12px; background:var(--surface-elevated); border-radius:var(--radius-sm); border:1px solid var(--border);">
             <div style="color:var(--text-muted); font-size:10.5px; text-transform:uppercase; font-weight:700;">Database</div>
-            <div style="font-weight:700; color:var(--accent-blue); margin-top:2px;" id="sm-db">Connected</div>
+            <div style="font-weight:700; color:var(--accent); margin-top:2px;" id="sm-db">Connected</div>
           </div>
-          <div style="padding:12px; background:var(--bg-subtle); border-radius:var(--radius-sm); border:1px solid var(--border);">
+          <div style="padding:12px; background:var(--surface-elevated); border-radius:var(--radius-sm); border:1px solid var(--border);">
             <div style="color:var(--text-muted); font-size:10.5px; text-transform:uppercase; font-weight:700;">Model Provider</div>
             <div style="font-weight:700; color:var(--text-main); margin-top:2px;" id="sm-model">Gemini</div>
           </div>
-          <div style="padding:12px; background:var(--bg-subtle); border-radius:var(--radius-sm); border:1px solid var(--border);">
+          <div style="padding:12px; background:var(--surface-elevated); border-radius:var(--radius-sm); border:1px solid var(--border);">
             <div style="color:var(--text-muted); font-size:10.5px; text-transform:uppercase; font-weight:700;">Safe Tools</div>
             <div style="font-weight:700; color:var(--text-main); margin-top:2px;" id="sm-tools">10 Enabled</div>
           </div>
-          <div style="padding:12px; background:var(--bg-subtle); border-radius:var(--radius-sm); border:1px solid var(--border);">
+          <div style="padding:12px; background:var(--surface-elevated); border-radius:var(--radius-sm); border:1px solid var(--border);">
             <div style="color:var(--text-muted); font-size:10.5px; text-transform:uppercase; font-weight:700;">Uptime</div>
             <div style="font-weight:700; color:var(--text-main); margin-top:2px;" id="sm-uptime">Active</div>
           </div>
@@ -543,7 +665,7 @@
   </div>
 
   <!-- ========================================================================= -->
-  <!-- MODAL 2: AGENT PROGRESSIVE DISCLOSURE -->
+  <!-- MODAL 2: AGENT DETAIL -->
   <!-- ========================================================================= -->
   <div class="modal-overlay" id="agent-modal" onclick="if(event.target===this)closeAgentModal()">
     <div class="modal-card">
@@ -554,27 +676,73 @@
       <div class="modal-body">
         <div style="margin-bottom:14px;">
           <div style="font-size:15px; font-weight:700; color:var(--text-main);" id="modal-agent-role">Role</div>
-          <div style="font-size:13px; color:var(--text-secondary); margin-top:4px;" id="modal-agent-prompt">Prompt</div>
+          <div style="font-size:12.5px; color:var(--text-secondary); margin-top:4px;" id="modal-agent-prompt">Prompt</div>
         </div>
 
-        <div style="background:var(--bg-subtle); padding:12px 14px; border-radius:var(--radius-sm); border:1px solid var(--border); margin-bottom:14px; font-size:12.5px;">
+        <div style="background:var(--surface-elevated); padding:12px 14px; border-radius:var(--radius-sm); border:1px solid var(--border); margin-bottom:14px; font-size:12.5px;">
           <div>Status: <strong id="modal-agent-status" style="color:var(--status-green-text);">ACTIVE</strong></div>
-          <div style="margin-top:4px;">Allowed Tools: <strong id="modal-agent-tools" style="color:var(--accent-blue);"></strong></div>
+          <div style="margin-top:4px;">Allowed Tools: <strong id="modal-agent-tools" style="color:var(--accent);"></strong></div>
         </div>
 
         <!-- Progressive Disclosure: Technical Info -->
-        <details style="margin-top:14px; font-size:12.5px; color:var(--text-secondary);">
-          <summary style="cursor:pointer; color:var(--accent-blue); font-weight:600; margin-bottom:8px;">Advanced Technical Specs</summary>
-          <div style="background:var(--bg-subtle); padding:12px; border-radius:var(--radius-sm); border:1px solid var(--border); display:flex; flex-direction:column; gap:6px; font-family:var(--font-mono); font-size:12px;">
+        <details style="margin-top:14px; font-size:12px; color:var(--text-secondary);">
+          <summary style="cursor:pointer; color:var(--accent); font-weight:600; margin-bottom:8px;">Advanced Technical Specs</summary>
+          <div style="background:var(--surface-elevated); padding:12px; border-radius:var(--radius-sm); border:1px solid var(--border); display:flex; flex-direction:column; gap:6px; font-family:var(--font-mono); font-size:11.5px;">
             <div>MODEL: <span id="modal-tech-model" style="color:var(--text-main);"></span></div>
             <div>PERMISSION LEVEL: <span id="modal-tech-perm" style="color:var(--text-main);"></span></div>
             <div>MEMORY SCOPE: <span id="modal-tech-memory" style="color:var(--text-main);"></span></div>
-            <div>RUNTIME: <span style="color:var(--text-main);">Isolated Local Sandbox</span></div>
+            <div>RUNTIME: <span style="color:var(--text-main);">Isolated Subprocess Sandbox</span></div>
           </div>
         </details>
 
         <div style="margin-top:20px; display:flex; justify-content:flex-end;">
           <button class="btn-ui btn-ui-secondary" onclick="closeAgentModal()">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- MODAL 3: AGENT FACTORY -->
+  <!-- ========================================================================= -->
+  <div class="modal-overlay" id="factory-modal" onclick="if(event.target===this)closeCreateAgentModal()">
+    <div class="modal-card">
+      <div class="modal-header">
+        <span class="modal-title">Create a New VAL Agent</span>
+        <button class="modal-close" onclick="closeCreateAgentModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size:12.5px; color:var(--text-secondary); margin-bottom:16px;">
+          The Agent Factory autonomously generates configuration, tool boundaries, and validates competencies inside the sandbox.
+        </p>
+
+        <div style="display:flex; flex-direction:column; gap:14px;">
+          <div>
+            <label style="font-size:11.5px; font-weight:700; text-transform:uppercase; color:var(--text-muted); display:block; margin-bottom:5px;">What should this agent specialize in?</label>
+            <input id="factory-domain-input" placeholder="e.g. Calculus, Python Systems, Aerospace Engineering, Financial Modeling" style="width:100%;">
+          </div>
+
+          <div>
+            <label style="font-size:11.5px; font-weight:700; text-transform:uppercase; color:var(--text-muted); display:block; margin-bottom:5px;">What should it accomplish?</label>
+            <textarea id="factory-purpose-input" rows="3" placeholder="e.g. Learn calculus well enough to teach me and provide rigorous step-by-step proofs." style="width:100%; resize:vertical;"></textarea>
+          </div>
+
+          <div>
+            <label style="font-size:11.5px; font-weight:700; text-transform:uppercase; color:var(--text-muted); display:block; margin-bottom:6px;">Capabilities</label>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; font-size:12.5px; color:var(--text-main);">
+              <label style="display:flex; align-items:center; gap:6px; cursor:pointer;"><input type="checkbox" checked id="cap-research"> Research</label>
+              <label style="display:flex; align-items:center; gap:6px; cursor:pointer;"><input type="checkbox" checked id="cap-learn"> Learn</label>
+              <label style="display:flex; align-items:center; gap:6px; cursor:pointer;"><input type="checkbox" checked id="cap-analyze"> Analyze</label>
+              <label style="display:flex; align-items:center; gap:6px; cursor:pointer;"><input type="checkbox" checked id="cap-teach"> Teach</label>
+            </div>
+          </div>
+
+          <div id="factory-build-result" style="display:none; padding:12px; background:var(--surface-elevated); border-radius:var(--radius-sm); border:1px solid var(--border);"></div>
+
+          <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:8px;">
+            <button class="btn-ui btn-ui-secondary" onclick="closeCreateAgentModal()">Cancel</button>
+            <button class="btn-ui btn-ui-primary" onclick="submitAgentFactoryForm()">Create Agent</button>
+          </div>
         </div>
       </div>
     </div>
