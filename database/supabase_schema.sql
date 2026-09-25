@@ -1,7 +1,8 @@
 -- ==============================================================================
--- VAL SUPABASE POSTGRESQL SCHEMA (v1.0)
--- Aligned with Document 21 (Database Design), Document 09, Document 35, Document 36
--- Supports multi-tenancy, Row Level Security (RLS), and pgvector embeddings
+-- VAL SUPABASE POSTGRESQL SCHEMA (v1.1)
+-- Complete schema for VAL Autonomous AI Operating System
+-- Aligned with Master Architecture Specifications
+-- Multi-tenancy, Row Level Security (RLS), pgvector embeddings, and EXPLICIT GRANTS
 -- ==============================================================================
 
 -- 1. EXTENSIONS
@@ -148,7 +149,7 @@ CREATE TABLE IF NOT EXISTS public.knowledge_items (
     updated_at TIMESTAMPTZ NOT NULL DEFAULT clock_timestamp()
 );
 
--- 11. LEARNING OBJECTIVES & CURRICULA (SECTION 14)
+-- 11. LEARNING OBJECTIVES & CURRICULA
 CREATE TABLE IF NOT EXISTS public.learning_objectives (
     objective_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     org_id UUID NOT NULL REFERENCES public.organizations(org_id) ON DELETE CASCADE,
@@ -189,7 +190,7 @@ CREATE TABLE IF NOT EXISTS public.approvals (
     expires_at TIMESTAMPTZ
 );
 
--- 13. IMMUTABLE AUDIT LOGS (TABLE 11 & MASTER SPEC §11)
+-- 13. IMMUTABLE AUDIT LOGS
 CREATE TABLE IF NOT EXISTS public.audit_logs (
     log_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     org_id UUID NOT NULL,
@@ -216,7 +217,7 @@ CREATE TRIGGER trg_audit_no_update
     BEFORE UPDATE OR DELETE ON public.audit_logs
     FOR EACH ROW EXECUTE FUNCTION public.fn_prevent_audit_tampering();
 
--- 14. EXPERIMENTS & SELF-IMPROVEMENT (SECTION 16)
+-- 14. EXPERIMENTS & SELF-IMPROVEMENT
 CREATE TABLE IF NOT EXISTS public.experiments (
     experiment_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     org_id UUID NOT NULL REFERENCES public.organizations(org_id) ON DELETE CASCADE,
@@ -242,6 +243,41 @@ CREATE TABLE IF NOT EXISTS public.events (
     created_at TIMESTAMPTZ NOT NULL DEFAULT clock_timestamp()
 );
 
+-- 16. CONVERSATIONS (CHAT SESSIONS)
+CREATE TABLE IF NOT EXISTS public.conversations (
+    conversation_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    org_id UUID NOT NULL REFERENCES public.organizations(org_id) ON DELETE CASCADE,
+    user_id UUID NOT NULL REFERENCES public.users(user_id) ON DELETE CASCADE,
+    title TEXT NOT NULL DEFAULT 'Conversation',
+    status TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'archived', 'deleted')),
+    created_at TIMESTAMPTZ NOT NULL DEFAULT clock_timestamp(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT clock_timestamp()
+);
+
+-- 17. MESSAGES (CHAT HISTORY)
+CREATE TABLE IF NOT EXISTS public.messages (
+    message_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    conversation_id UUID NOT NULL REFERENCES public.conversations(conversation_id) ON DELETE CASCADE,
+    org_id UUID NOT NULL,
+    role TEXT NOT NULL CHECK (role IN ('user', 'assistant', 'system')),
+    content TEXT NOT NULL,
+    metadata JSONB DEFAULT '{}'::jsonb,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT clock_timestamp()
+);
+
+-- 18. PROJECTS
+CREATE TABLE IF NOT EXISTS public.projects (
+    project_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    org_id UUID NOT NULL REFERENCES public.organizations(org_id) ON DELETE CASCADE,
+    name TEXT NOT NULL,
+    description TEXT,
+    repo_url TEXT,
+    branch TEXT NOT NULL DEFAULT 'main',
+    config JSONB NOT NULL DEFAULT '{}'::jsonb,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT clock_timestamp(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT clock_timestamp()
+);
+
 -- ==============================================================================
 -- INDEXES FOR SCALE
 -- ==============================================================================
@@ -252,6 +288,8 @@ CREATE INDEX IF NOT EXISTS idx_approvals_pending ON public.approvals (org_id, st
 CREATE INDEX IF NOT EXISTS idx_audit_org_created ON public.audit_logs (org_id, created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_memory_scope ON public.memory_records (org_id, scope_type, scope_id);
 CREATE INDEX IF NOT EXISTS idx_learning_status ON public.learning_objectives (org_id, status);
+CREATE INDEX IF NOT EXISTS idx_conversations_user ON public.conversations (user_id, updated_at DESC);
+CREATE INDEX IF NOT EXISTS idx_messages_conv ON public.messages (conversation_id, created_at ASC);
 
 -- pgvector cosine distance index
 CREATE INDEX IF NOT EXISTS idx_memory_vector ON public.memory_records USING hnsw (embedding vector_cosine_ops);
@@ -263,13 +301,21 @@ CREATE INDEX IF NOT EXISTS idx_knowledge_vector ON public.knowledge_items USING 
 ALTER TABLE public.organizations ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.users ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.agents ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.agent_versions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.tasks ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.tools ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.policies ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.memory_records ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.knowledge_items ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.learning_objectives ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.curricula ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.approvals ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.audit_logs ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.experiments ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.events ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.conversations ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.messages ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.projects ENABLE ROW LEVEL SECURITY;
 
 -- Helper to extract org_id from JWT in Supabase
 CREATE OR REPLACE FUNCTION public.current_org_id() RETURNS UUID AS $$
@@ -277,23 +323,165 @@ CREATE OR REPLACE FUNCTION public.current_org_id() RETURNS UUID AS $$
 $$ LANGUAGE sql STABLE;
 
 -- Tenant Isolation Policies
+DROP POLICY IF EXISTS tenant_isolation_agents ON public.agents;
 CREATE POLICY tenant_isolation_agents ON public.agents
     FOR ALL USING (org_id = public.current_org_id() OR auth.role() = 'service_role');
 
+DROP POLICY IF EXISTS tenant_isolation_tasks ON public.tasks;
 CREATE POLICY tenant_isolation_tasks ON public.tasks
     FOR ALL USING (org_id = public.current_org_id() OR auth.role() = 'service_role');
 
+DROP POLICY IF EXISTS tenant_isolation_memory ON public.memory_records;
 CREATE POLICY tenant_isolation_memory ON public.memory_records
     FOR ALL USING (org_id = public.current_org_id() OR auth.role() = 'service_role');
 
+DROP POLICY IF EXISTS tenant_isolation_knowledge ON public.knowledge_items;
 CREATE POLICY tenant_isolation_knowledge ON public.knowledge_items
     FOR ALL USING (org_id = public.current_org_id() OR auth.role() = 'service_role');
 
+DROP POLICY IF EXISTS tenant_isolation_learning ON public.learning_objectives;
 CREATE POLICY tenant_isolation_learning ON public.learning_objectives
     FOR ALL USING (org_id = public.current_org_id() OR auth.role() = 'service_role');
 
+DROP POLICY IF EXISTS tenant_isolation_approvals ON public.approvals;
 CREATE POLICY tenant_isolation_approvals ON public.approvals
     FOR ALL USING (org_id = public.current_org_id() OR auth.role() = 'service_role');
 
--- Realtime publication for dashboard
-ALTER PUBLICATION supabase_realtime ADD TABLE public.tasks, public.approvals, public.events, public.agents, public.learning_objectives;
+DROP POLICY IF EXISTS tenant_isolation_conversations ON public.conversations;
+CREATE POLICY tenant_isolation_conversations ON public.conversations
+    FOR ALL USING (org_id = public.current_org_id() OR auth.role() = 'service_role');
+
+DROP POLICY IF EXISTS tenant_isolation_messages ON public.messages;
+CREATE POLICY tenant_isolation_messages ON public.messages
+    FOR ALL USING (org_id = public.current_org_id() OR auth.role() = 'service_role');
+
+DROP POLICY IF EXISTS tenant_isolation_projects ON public.projects;
+CREATE POLICY tenant_isolation_projects ON public.projects
+    FOR ALL USING (org_id = public.current_org_id() OR auth.role() = 'service_role');
+
+-- ==============================================================================
+-- EXPLICIT GRANTS FOR ALL TABLES (SUPABASE ROLES: postgres, service_role, authenticated, anon)
+-- ==============================================================================
+
+-- 1. Schema Usage
+GRANT USAGE ON SCHEMA public TO postgres, anon, authenticated, service_role;
+
+-- 2. Sequence Grants
+GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO postgres, service_role;
+GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO authenticated, anon;
+
+-- 3. Explicit Table-by-Table Grants
+
+-- organizations
+GRANT ALL ON TABLE public.organizations TO postgres, service_role;
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE public.organizations TO authenticated;
+GRANT SELECT ON TABLE public.organizations TO anon;
+
+-- users
+GRANT ALL ON TABLE public.users TO postgres, service_role;
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE public.users TO authenticated;
+GRANT SELECT ON TABLE public.users TO anon;
+
+-- agents
+GRANT ALL ON TABLE public.agents TO postgres, service_role;
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE public.agents TO authenticated;
+GRANT SELECT ON TABLE public.agents TO anon;
+
+-- agent_versions
+GRANT ALL ON TABLE public.agent_versions TO postgres, service_role;
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE public.agent_versions TO authenticated;
+GRANT SELECT ON TABLE public.agent_versions TO anon;
+
+-- tasks
+GRANT ALL ON TABLE public.tasks TO postgres, service_role;
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE public.tasks TO authenticated;
+GRANT SELECT ON TABLE public.tasks TO anon;
+
+-- tools
+GRANT ALL ON TABLE public.tools TO postgres, service_role;
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE public.tools TO authenticated;
+GRANT SELECT ON TABLE public.tools TO anon;
+
+-- policies
+GRANT ALL ON TABLE public.policies TO postgres, service_role;
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE public.policies TO authenticated;
+GRANT SELECT ON TABLE public.policies TO anon;
+
+-- memory_records
+GRANT ALL ON TABLE public.memory_records TO postgres, service_role;
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE public.memory_records TO authenticated;
+GRANT SELECT ON TABLE public.memory_records TO anon;
+
+-- knowledge_items
+GRANT ALL ON TABLE public.knowledge_items TO postgres, service_role;
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE public.knowledge_items TO authenticated;
+GRANT SELECT ON TABLE public.knowledge_items TO anon;
+
+-- learning_objectives
+GRANT ALL ON TABLE public.learning_objectives TO postgres, service_role;
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE public.learning_objectives TO authenticated;
+GRANT SELECT ON TABLE public.learning_objectives TO anon;
+
+-- curricula
+GRANT ALL ON TABLE public.curricula TO postgres, service_role;
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE public.curricula TO authenticated;
+GRANT SELECT ON TABLE public.curricula TO anon;
+
+-- approvals
+GRANT ALL ON TABLE public.approvals TO postgres, service_role;
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE public.approvals TO authenticated;
+GRANT SELECT ON TABLE public.approvals TO anon;
+
+-- audit_logs (Immutable: standard roles get SELECT and INSERT only)
+GRANT ALL ON TABLE public.audit_logs TO postgres, service_role;
+GRANT SELECT, INSERT ON TABLE public.audit_logs TO authenticated;
+GRANT SELECT ON TABLE public.audit_logs TO anon;
+
+-- experiments
+GRANT ALL ON TABLE public.experiments TO postgres, service_role;
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE public.experiments TO authenticated;
+GRANT SELECT ON TABLE public.experiments TO anon;
+
+-- events
+GRANT ALL ON TABLE public.events TO postgres, service_role;
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE public.events TO authenticated;
+GRANT SELECT ON TABLE public.events TO anon;
+
+-- conversations
+GRANT ALL ON TABLE public.conversations TO postgres, service_role;
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE public.conversations TO authenticated;
+GRANT SELECT ON TABLE public.conversations TO anon;
+
+-- messages
+GRANT ALL ON TABLE public.messages TO postgres, service_role;
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE public.messages TO authenticated;
+GRANT SELECT ON TABLE public.messages TO anon;
+
+-- projects
+GRANT ALL ON TABLE public.projects TO postgres, service_role;
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE public.projects TO authenticated;
+GRANT SELECT ON TABLE public.projects TO anon;
+
+-- 4. Schema-wide Blanket Grants
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO postgres, service_role;
+GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO authenticated;
+GRANT SELECT ON ALL TABLES IN SCHEMA public TO anon;
+
+-- 5. Future Default Privileges
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO postgres, service_role;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO authenticated;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT ON TABLES TO anon;
+
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON SEQUENCES TO postgres, service_role;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT USAGE, SELECT ON SEQUENCES TO authenticated, anon;
+
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON ROUTINES TO postgres, service_role;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT EXECUTE ON ROUTINES TO authenticated;
+
+-- Realtime publication for dashboard (fails gracefully if tables already in publication)
+DO $$
+BEGIN
+    ALTER PUBLICATION supabase_realtime ADD TABLE public.tasks, public.approvals, public.events, public.agents, public.learning_objectives, public.conversations, public.messages;
+EXCEPTION WHEN OTHERS THEN
+    NULL;
+END $$;
