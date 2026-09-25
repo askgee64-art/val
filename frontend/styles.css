@@ -1,63 +1,63 @@
 /* ==============================================================================
    VAL — PERSONAL AUTONOMOUS AI OPERATING SYSTEM
-   Theme: Executive Obsidian Minimalist Command Center
-   Aesthetic: Deep Charcoal, Elevated Dark Surfaces, Precision Vector Accents
-   Zero Clutter, Human-Friendly, Professional
+   Theme: Executive Clean Minimalist Light Mode
+   Aesthetic: Clean Porcelain Canvas, Elevated Crisp White Surfaces, Precision Cobalt Vector Accents
+   Zero Clutter, Human-Friendly, Professional & Calm
    ============================================================================== */
 
 :root {
-  /* Color Palette */
-  --bg: #0a0c10;
-  --bg-subtle: #0f1218;
-  --surface: #131720;
-  --surface-elevated: #181d28;
-  --surface-hover: #1e2332;
-  --surface-active: #232a3d;
+  /* Color Palette — Executive Light Mode */
+  --bg: #f8fafc;
+  --bg-subtle: #f1f5f9;
+  --surface: #ffffff;
+  --surface-elevated: #ffffff;
+  --surface-hover: #f8fafc;
+  --surface-active: #f1f5f9;
 
   /* Borders & Dividers */
-  --border: rgba(255, 255, 255, 0.08);
-  --border-hover: rgba(255, 255, 255, 0.15);
-  --border-strong: rgba(255, 255, 255, 0.22);
-  --border-focus: #38bdf8;
+  --border: #e2e8f0;
+  --border-hover: #cbd5e1;
+  --border-strong: #94a3b8;
+  --border-focus: #2563eb;
 
   /* Backward-compatibility aliases */
-  --glass-card: #131720;
-  --glass-surface: #131720;
-  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-card: #ffffff;
+  --glass-surface: #ffffff;
+  --glass-border: #e2e8f0;
 
   /* Typography */
-  --text-main: #f8fafc;
-  --text-secondary: #94a3b8;
+  --text-main: #0f172a;
+  --text-secondary: #475569;
   --text-muted: #64748b;
-  --text-dim: #475569;
+  --text-dim: #94a3b8;
 
-  /* Primary Futuristic Accent (Electric Cyan / Blue) */
-  --accent: #38bdf8;
-  --accent-hover: #0ea5e9;
-  --accent-subtle: rgba(56, 189, 248, 0.1);
-  --accent-border: rgba(56, 189, 248, 0.25);
+  /* Primary Futuristic Accent (Clean Cobalt Blue) */
+  --accent: #2563eb;
+  --accent-hover: #1d4ed8;
+  --accent-subtle: #eff6ff;
+  --accent-border: #bfdbfe;
 
   /* Status Colors */
   --status-green: #10b981;
-  --status-green-bg: rgba(16, 185, 129, 0.12);
-  --status-green-border: rgba(16, 185, 129, 0.3);
-  --status-green-text: #34d399;
+  --status-green-bg: #ecfdf5;
+  --status-green-border: #a7f3d0;
+  --status-green-text: #059669;
 
   --status-amber: #f59e0b;
-  --status-amber-bg: rgba(245, 158, 11, 0.12);
-  --status-amber-border: rgba(245, 158, 11, 0.3);
-  --status-amber-text: #fbbf24;
+  --status-amber-bg: #fffbeb;
+  --status-amber-border: #fde68a;
+  --status-amber-text: #d97706;
 
   --status-red: #ef4444;
-  --status-red-bg: rgba(239, 68, 68, 0.12);
-  --status-red-border: rgba(239, 68, 68, 0.3);
-  --status-red-text: #f87171;
+  --status-red-bg: #fef2f2;
+  --status-red-border: #fecaca;
+  --status-red-text: #dc2626;
 
-  /* Shadows */
-  --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.3);
-  --shadow-md: 0 4px 12px -2px rgba(0, 0, 0, 0.4);
-  --shadow-lg: 0 12px 24px -4px rgba(0, 0, 0, 0.5);
-  --shadow-modal: 0 24px 48px -12px rgba(0, 0, 0, 0.7);
+  /* Shadows (Soft Crisp Depth for Light Theme) */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.04);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.03);
+  --shadow-modal: 0 20px 25px -5px rgba(0, 0, 0, 0.12), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
 
   /* Radius */
   --radius-sm: 6px;
@@ -97,8 +97,9 @@ html, body {
   left: 0;
   right: 0;
   height: 56px;
-  background: var(--bg-subtle);
+  background: #ffffff;
   border-bottom: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -126,7 +127,7 @@ html, body {
 
 .mobile-nav-toggle:hover {
   color: var(--text-main);
-  background: var(--surface);
+  background: var(--bg-subtle);
 }
 
 .mobile-nav-toggle svg {
@@ -142,7 +143,7 @@ html, body {
   height: 28px;
   border-radius: var(--radius-sm);
   background: var(--accent);
-  color: #040810;
+  color: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -260,7 +261,7 @@ html, body {
 /* Sidebar */
 .app-sidebar {
   width: 240px;
-  background: var(--bg-subtle);
+  background: #ffffff;
   border-right: 1px solid var(--border);
   display: flex;
   flex-direction: column;
@@ -972,23 +973,24 @@ input:focus, textarea:focus, select:focus {
 }
 
 .msg-row.user .msg-bubble {
-  background: var(--surface-elevated);
-  color: var(--text-main);
-  border: 1px solid var(--border);
+  background: var(--accent);
+  color: #ffffff;
+  border: 1px solid var(--accent-hover);
   border-bottom-right-radius: 4px;
 }
 
 .msg-row.assistant .msg-bubble {
-  background: var(--surface);
+  background: #ffffff;
   color: var(--text-main);
   border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
   border-bottom-left-radius: 4px;
 }
 
 .chat-bar-footer {
   padding: 14px 18px;
   border-top: 1px solid var(--border);
-  background: var(--bg-subtle);
+  background: #ffffff;
   display: flex;
   gap: 10px;
   align-items: center;
@@ -1006,7 +1008,7 @@ input:focus, textarea:focus, select:focus {
   display: none;
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.65);
+  background: rgba(15, 23, 42, 0.45);
   backdrop-filter: blur(4px);
   z-index: 100;
   align-items: center;
