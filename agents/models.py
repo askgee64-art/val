@@ -12,7 +12,7 @@ from val.models.enums import AgentStatus, PermissionLevel
 class AgentConfig(BaseModel):
     system_prompt: str
     domain: str
-    model_preferences: dict[str, str] = Field(default_factory=lambda: {"default": "gemini-1.5-flash"})
+    model_preferences: dict[str, str] = Field(default_factory=lambda: {"default": "gemini-3.5-flash-lite"})
     tool_allow_list: list[str] = Field(default_factory=list)
     memory_scope: list[str] = Field(default_factory=lambda: ["working", "short_term", "agent"])
     max_permission_level: PermissionLevel = PermissionLevel.EXECUTE

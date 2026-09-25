@@ -90,6 +90,12 @@ def create_app() -> FastAPI:
             async def serve_js() -> FileResponse:
                 return FileResponse(js_file, media_type="application/javascript")
 
+        manifest_file = frontend_dir / "manifest.json"
+        if manifest_file.exists():
+            @app.api_route("/manifest.json", methods=["GET", "HEAD"], include_in_schema=False)
+            async def serve_manifest() -> FileResponse:
+                return FileResponse(manifest_file, media_type="application/manifest+json")
+
         app.mount("/static", StaticFiles(directory=str(frontend_dir)), name="static")
 
     return app

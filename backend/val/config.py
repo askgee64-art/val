@@ -65,7 +65,7 @@ class Settings(BaseSettings):
     # Model providers
     gemini_api_key: str | None = Field(default=None, alias="GEMINI_API_KEY")
     gemini_default_model: str = Field(
-        default="gemini-1.5-flash", alias="GEMINI_DEFAULT_MODEL"
+        default="gemini-3.5-flash-lite", alias="GEMINI_DEFAULT_MODEL"
     )
     openai_api_key: str | None = Field(default=None, alias="OPENAI_API_KEY")
     openai_base_url: str = Field(
@@ -76,7 +76,7 @@ class Settings(BaseSettings):
         default="claude-3-5-sonnet-20241022", alias="ANTHROPIC_DEFAULT_MODEL"
     )
     ollama_base_url: str = Field(default="http://127.0.0.1:11434", alias="OLLAMA_BASE_URL")
-    default_model: str = Field(default="gemini-1.5-flash", alias="VAL_DEFAULT_MODEL")
+    default_model: str = Field(default="gemini-3.5-flash-lite", alias="VAL_DEFAULT_MODEL")
     # When no API key: use deterministic local planner (still real planning logic)
     allow_local_fallback: bool = Field(default=True, alias="VAL_ALLOW_LOCAL_FALLBACK")
 
