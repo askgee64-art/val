@@ -8,6 +8,7 @@ Document 04 §2.1 & Prompt Spec §9, §10:
 from __future__ import annotations
 
 import json
+import re
 from dataclasses import dataclass
 from typing import Any
 
@@ -297,7 +298,13 @@ class ModelRouter:
 
     def _generate_plan_dict(self, objective: str) -> dict[str, Any]:
         """Generate structured task steps based on objective patterns."""
-        lowered = objective.lower()
+        # Isolate the actual objective from any working memory or context injected into prompt
+        raw_obj = objective
+        if "Objective:\n" in objective:
+            part = objective.split("Objective:\n", 1)[1]
+            raw_obj = part.split("\nActive Working Memory:")[0].split("\nContext:")[0].strip()
+
+        lowered = raw_obj.lower()
         steps = []
 
         # 1. High impact / approval required simulation (evaluated first for safety)
@@ -317,7 +324,7 @@ class ModelRouter:
                     {
                         "step_id": 2,
                         "title": "High-impact production action (Level 4)",
-                        "description": f"Execution of high-impact action: {objective}",
+                        "description": f"Execution of high-impact action: {raw_obj}",
                         "tool_name": "code_sandbox",
                         "tool_input": {"code": "# High impact action placeholder\nprint('Level 4 approved execution')"},
                         "required_permission_level": 4,  # Level 4: requires founder approval!
@@ -383,13 +390,12 @@ class ModelRouter:
             )
 
         # 2. Math / calculation
-        elif any(w in lowered for w in ["calculate", "math", "compute", "sum", "average", "sqrt"]):
-            # Extract expression or run calculation
-            expr = "2 * 3.14159 * 10"
-            for token in objective.split():
-                if any(c in token for c in "+-*/%^"):
-                    expr = token
-                    break
+        elif any(w in lowered for w in ["calculate", "math", "compute", "sum", "average", "sqrt", "times", "multiply"]) or re.search(r"(\d+(?:\.\d+)?(?:\s*[\+\-\*\/\×\^xX]\s*\d+(?:\.\d+)?)+)", objective):
+            # Extract mathematical expression cleanly
+            m = re.search(r"(\d+(?:\.\d+)?(?:\s*[\+\-\*\/\×\^xX]\s*\d+(?:\.\d+)?)+)", objective)
+            expr = m.group(1).strip() if m else "125 * 8"
+            expr = expr.replace("×", "*").replace("X", "*").replace("^", "**")
+            expr = re.sub(r"(\d+)\s*[xX]\s*(\d+)", r"\1 * \2", expr)
             steps.append(
                 {
                     "step_id": 1,

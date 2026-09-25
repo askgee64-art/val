@@ -189,3 +189,62 @@ async def test_api_activity_stream(auth_headers):
             assert "id" in act
             assert "title" in act
             assert "timestamp" in act
+
+
+@pytest.mark.asyncio
+async def test_conversational_chat_responses(auth_headers):
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as client:
+        # 1. Greeting
+        res1 = await client.post(
+            "/api/v1/chat",
+            json={"content": "Hello VAL"},
+            headers=auth_headers,
+        )
+        assert res1.status_code == 200
+        data1 = res1.json()
+        assert "Tomiwa" in data1["message"]["content"]
+        assert "VAL" in data1["message"]["content"]
+        conv_id = data1["conversation_id"]
+
+        # 2. Active agents inquiry
+        res2 = await client.post(
+            "/api/v1/chat",
+            json={"content": "What agents are currently active?", "conversation_id": conv_id},
+            headers=auth_headers,
+        )
+        assert res2.status_code == 200
+        data2 = res2.json()
+        assert "CALCULUS.VAL" in data2["message"]["content"] or "specialized agents" in data2["message"]["content"]
+
+        # 3. Math calculation
+        res3 = await client.post(
+            "/api/v1/chat",
+            json={"content": "What is 125 × 8?", "conversation_id": conv_id},
+            headers=auth_headers,
+        )
+        assert res3.status_code == 200
+        data3 = res3.json()
+        assert "1,000" in data3["message"]["content"] or "1000" in data3["message"]["content"]
+
+        # 4. Status inquiry
+        res4 = await client.post(
+            "/api/v1/chat",
+            json={"content": "What are you currently working on?", "conversation_id": conv_id},
+            headers=auth_headers,
+        )
+        assert res4.status_code == 200
+        data4 = res4.json()
+        assert "Tomiwa" in data4["message"]["content"] or "working" in data4["message"]["content"]
+
+        # 5. Verify conversation persistence
+        convs_res = await client.get("/api/v1/chat/conversations", headers=auth_headers)
+        assert convs_res.status_code == 200
+        convs = convs_res.json()
+        assert any(c["conversation_id"] == conv_id for c in convs)
+
+        msgs_res = await client.get(f"/api/v1/chat/conversations/{conv_id}/messages", headers=auth_headers)
+        assert msgs_res.status_code == 200
+        msgs = msgs_res.json()
+        assert len(msgs) >= 8  # 4 user + 4 assistant msgs
+

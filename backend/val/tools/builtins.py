@@ -16,6 +16,7 @@ import math
 import operator as op
 import os
 import platform
+import re
 import shutil
 import sys
 import time
@@ -233,13 +234,25 @@ class SafeCalculatorTool(BaseTool):
         raise ValueError(f"unsupported expression node: {type(node).__name__}")
 
     async def execute(self, params: dict[str, Any]) -> ToolResult:
-        expr = params.get("expression", "")
-        if not expr:
+        raw_expr = str(params.get("expression", "")).strip()
+        if not raw_expr:
             return ToolResult(success=False, error="empty expression")
+
+        # Clean and normalize mathematical operators (e.g., unicode ×, ^, x between numbers)
+        expr = raw_expr.replace("×", "*").replace("X", "*")
+        expr = re.sub(r"(\d+)\s*[xX]\s*(\d+)", r"\1 * \2", expr)
+        expr = expr.replace("^", "**")
+        expr = re.sub(r"[?!=]+$", "", expr).strip()
+
         try:
             tree = ast.parse(expr, mode="eval")
             res = self._eval(tree)
-            return ToolResult(success=True, output={"expression": expr, "result": res})
+            # Format integer nicely if whole number
+            if isinstance(res, float) and res.is_integer():
+                formatted_res = int(res)
+            else:
+                formatted_res = res
+            return ToolResult(success=True, output={"expression": expr, "result": formatted_res})
         except Exception as exc:
             return ToolResult(success=False, error=f"calculation error: {exc}")
 

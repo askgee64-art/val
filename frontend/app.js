@@ -4,7 +4,32 @@
  * Connected to live backend APIs: Status, Chat, Tasks, Learning, Agents, Factory, Memory, Tools, Audit.
  */
 
-const API_BASE = '/api/v1';
+function getApiBase() {
+  const custom = localStorage.getItem('val_backend_url');
+  if (custom) {
+    const trimmed = custom.replace(/\/$/, '');
+    return trimmed.endsWith('/api/v1') ? trimmed : `${trimmed}/api/v1`;
+  }
+  return '/api/v1';
+}
+
+// Safe API Fetch Wrapper with Founder Token
+async function api(path, opts = {}) {
+  const base = getApiBase();
+  const token = localStorage.getItem('val_founder_token') || 'val-founder-dev-token';
+  opts.headers = {
+    'Content-Type': 'application/json',
+    'x-val-founder-key': token,
+    ...(opts.headers || {})
+  };
+  const res = await fetch(base + path, opts);
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ detail: res.statusText }));
+    throw new Error(err.detail || `API request failed (${res.status})`);
+  }
+  return res.json();
+}
+
 let currentConversationId = null;
 let systemState = {
   isPaused: false,
@@ -12,21 +37,6 @@ let systemState = {
   founderName: 'Tomiwa',
   status: 'ONLINE'
 };
-
-// Safe API Fetch Wrapper with Founder Token
-async function api(path, opts = {}) {
-  opts.headers = {
-    'Content-Type': 'application/json',
-    'x-val-founder-key': 'val-founder-dev-token',
-    ...(opts.headers || {})
-  };
-  const res = await fetch(API_BASE + path, opts);
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({ detail: res.statusText }));
-    throw new Error(err.detail || 'API request failed');
-  }
-  return res.json();
-}
 
 // Format relative time (e.g. "2 minutes ago")
 function formatTimeAgo(isoString) {
@@ -616,6 +626,18 @@ async function sendCommand(text) {
     userRow.className = 'msg-row user';
     userRow.innerHTML = `<div class="msg-bubble">${escapeHtml(text)}</div>`;
     history.appendChild(userRow);
+
+    // Clean loading state: "Thinking..."
+    const thinkingRow = document.createElement('div');
+    thinkingRow.className = 'msg-row assistant';
+    thinkingRow.id = 'chat-thinking-row';
+    thinkingRow.innerHTML = `
+      <div class="msg-bubble" style="display:flex; align-items:center; gap:8px; color:var(--text-muted);">
+        <span class="status-dot" style="background:var(--accent); width:6px; height:6px;"></span>
+        <span>Thinking...</span>
+      </div>
+    `;
+    history.appendChild(thinkingRow);
     history.scrollTop = history.scrollHeight;
   }
 
@@ -630,6 +652,11 @@ async function sendCommand(text) {
     });
 
     currentConversationId = res.conversation_id;
+    localStorage.setItem('val_active_conversation_id', res.conversation_id);
+
+    // Remove thinking state
+    const thinking = document.getElementById('chat-thinking-row');
+    if (thinking) thinking.remove();
 
     if (history) {
       const asstRow = document.createElement('div');
@@ -641,12 +668,51 @@ async function sendCommand(text) {
 
     await refreshAll();
   } catch (e) {
+    const thinking = document.getElementById('chat-thinking-row');
+    if (thinking) thinking.remove();
+
     if (history) {
       const errRow = document.createElement('div');
       errRow.className = 'msg-row assistant';
-      errRow.innerHTML = `<div class="msg-bubble" style="border-color:var(--status-red-border); color:var(--status-red-text);">Error: ${escapeHtml(e.message)}</div>`;
+      errRow.innerHTML = `
+        <div class="msg-bubble" style="border-color:var(--status-red-border); background:var(--status-red-bg);">
+          <div style="font-weight:700; color:var(--status-red-text); margin-bottom:4px;">VAL couldn't complete that request.</div>
+          <div style="font-size:12px; color:var(--text-secondary);"><strong>Connection:</strong> Offline or Unreachable</div>
+          <div style="font-size:12px; color:var(--text-secondary); margin-top:2px;"><strong>Reason:</strong> ${escapeHtml(e.message)}</div>
+          <button class="btn-ui btn-ui-secondary" style="margin-top:10px; padding:4px 12px; font-size:12px;" onclick="sendCommand('${escapeHtml(text)}')">Retry</button>
+        </div>
+      `;
       history.appendChild(errRow);
+      history.scrollTop = history.scrollHeight;
     }
+  }
+}
+
+// Conversation Persistence
+async function loadActiveConversation() {
+  try {
+    let convId = localStorage.getItem('val_active_conversation_id');
+    if (!convId) {
+      const convs = await api('/chat/conversations?limit=1');
+      if (convs && convs.length > 0) {
+        convId = convs[0].conversation_id;
+      }
+    }
+    if (!convId) return;
+
+    const msgs = await api(`/chat/conversations/${convId}/messages`);
+    const history = document.getElementById('chat-history-box');
+    if (!history || !msgs || msgs.length === 0) return;
+
+    currentConversationId = convId;
+    history.innerHTML = msgs.map(m => `
+      <div class="msg-row ${m.role === 'user' ? 'user' : 'assistant'}">
+        <div class="msg-bubble">${formatAssistantMarkdown(m.content)}</div>
+      </div>
+    `).join('');
+    history.scrollTop = history.scrollHeight;
+  } catch (e) {
+    console.error('Failed to load conversation history:', e);
   }
 }
 
@@ -834,6 +900,7 @@ async function refreshAll() {
 
 // Initial Boot
 document.addEventListener('DOMContentLoaded', () => {
+  loadActiveConversation();
   refreshAll();
   refreshLearning();
   refreshTeachingsList();

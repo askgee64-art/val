@@ -101,6 +101,19 @@ class Settings(BaseSettings):
     model_config = ConfigDict(env_file=".env", extra="ignore")
 
     def ensure_directories(self) -> None:
+        if os.environ.get("VERCEL"):
+            tmp_data = Path("/tmp/val_data")
+            try:
+                tmp_data.mkdir(parents=True, exist_ok=True)
+            except Exception:
+                pass
+            self.data_dir = tmp_data
+            self.database_url = f"sqlite+aiosqlite:///{tmp_data / 'val.db'}"
+            self.workspace_dir = tmp_data / "workspace"
+            self.sandbox_dir = tmp_data / "sandbox"
+            self.memory_dir = tmp_data / "memory"
+            self.audit_dir = tmp_data / "audit"
+
         for d in (
             self.data_dir,
             self.workspace_dir,
@@ -108,7 +121,10 @@ class Settings(BaseSettings):
             self.memory_dir,
             self.audit_dir,
         ):
-            Path(d).mkdir(parents=True, exist_ok=True)
+            try:
+                Path(d).mkdir(parents=True, exist_ok=True)
+            except Exception:
+                pass
 
 
 @lru_cache

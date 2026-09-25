@@ -1,0 +1,19 @@
+[project]
+name = "val"
+version = "0.1.0"
+description = "VAL Autonomous AI Personal Operating System"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi>=0.115.0",
+    "pydantic>=2.9.0",
+    "pydantic-settings>=2.6.0",
+    "sqlalchemy>=2.0.36",
+    "greenlet>=3.1.0",
+    "aiosqlite>=0.20.0",
+    "httpx>=0.27.0",
+    "python-multipart>=0.0.12",
+    "python-dateutil>=2.9.0",
+]
+
+[tool.vercel]
+entrypoint = "app:app"
